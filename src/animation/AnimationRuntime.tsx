@@ -24,6 +24,11 @@ export function AnimationRuntime() {
   const pathname = usePathname();
   const previousPath = useRef(pathname);
 
+  // Mounting means a route committed too: a navigation that changes the root
+  // layout (e.g. switching language) remounts this runtime instead of changing
+  // `pathname` under it, and must still release the navigation lock.
+  useEffect(() => endNavigation(), []);
+
   useEffect(() => {
     const unwatch = watchMedia(SMOOTH_SCROLL_QUERY, (enabled) => {
       if (enabled) startSmoothScroll();

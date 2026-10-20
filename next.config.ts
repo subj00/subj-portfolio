@@ -12,6 +12,11 @@ const nextConfig: NextConfig = {
   images: {
     formats: ["image/avif", "image/webp"],
   },
+  // Every page lives under a locale; the bare root goes to the default (Serbian).
+  // Temporary (307), so a future language-negotiation step can change it freely.
+  async redirects() {
+    return [{ source: "/", destination: "/sr", permanent: false }];
+  },
   turbopack: {
     rules: {
       "*.css": {
