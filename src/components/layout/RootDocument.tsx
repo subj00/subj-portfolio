@@ -15,7 +15,7 @@ const jost = Jost({
 // contrasts with the high-contrast display lettering of the name.
 const spaceGrotesk = Space_Grotesk({
   subsets: ["latin", "latin-ext"],
-  weight: "300",
+  weight: ["300", "400"],
   variable: "--font-space-grotesk",
   display: "swap",
 });
