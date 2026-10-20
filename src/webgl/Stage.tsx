@@ -49,8 +49,8 @@ const stageEvents = (store: Parameters<typeof createPointerEvents>[0]) => ({
  *
  * Hidden shells: after a language switch Next keeps the previous locale's shell
  * mounted but hidden (cacheComponents / Activity), Stage included. Its effects
- * clean up on hide, so the WebGL context is released there (GPU memory back)
- * and a fresh canvas is created if that shell is shown again (Back).
+ * clean up on hide, which swaps in a fresh Canvas: R3F disposes the old one
+ * (GPU memory back) and the new one gets a context only once shown again (Back).
  */
 export default function Stage() {
   const tier = useStage((s) => s.tier);
@@ -62,22 +62,21 @@ export default function Stage() {
   const [generation, setGeneration] = useState(0);
   const remount = useCallback(() => setGeneration((g) => g + 1), []);
   const renderer = useRef<WebGLRenderer | null>(null);
-  const released = useRef(false);
 
-  useEffect(() => {
-    if (released.current) {
-      released.current = false;
-      remount();
-    }
-    return () => {
+  // Hidden (or removed): replace the Canvas. R3F keeps its root alive through
+  // Activity hiding, but releases it fully (scene, renderer, context; once) when
+  // the Canvas element is removed, which React 19.2 does inside hidden trees too.
+  // The replacement creates no context until the shell is shown again.
+  useEffect(
+    () => () => {
       const gl = renderer.current;
       if (!gl) return; // nothing created yet (e.g. Strict Mode's dev re-run)
       releasedCanvases.add(gl.domElement);
-      gl.forceContextLoss();
       renderer.current = null;
-      released.current = true;
-    };
-  }, [remount]);
+      remount();
+    },
+    [remount],
+  );
 
   return (
     // lvh: sized to the largest mobile viewport so toolbar show/hide doesn't resize the canvas.
