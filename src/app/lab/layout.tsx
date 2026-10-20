@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import { TransitionLink as Link } from "@/components/navigation/TransitionLink";
 
 // TEMPORARY: architecture verification routes. Remove with src/webgl/scenes/lab.
 export const metadata: Metadata = {
@@ -23,6 +23,9 @@ export default function LabLayout({ children }: LayoutProps<"/lab">) {
           </li>
           <li>
             <Link href="/lab/scroll">Scroll</Link>
+          </li>
+          <li>
+            <Link href="/lab/interact">Interact</Link>
           </li>
         </ul>
       </nav>

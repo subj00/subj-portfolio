@@ -5,6 +5,7 @@ import { useEffect, useRef } from "react";
 import { watchMedia } from "@/lib/device";
 import { invalidateAnchors } from "@/runtime/scene/anchors";
 import { motionStore } from "@/stores/motion-store";
+import { endNavigation } from "@/stores/ui-store";
 import { stopScope } from "./director";
 import { MOTION_QUERIES, ScrollTrigger } from "./gsap";
 import { startSmoothScroll, stopSmoothScroll, syncSmoothScroll } from "./smooth-scroll";
@@ -69,6 +70,9 @@ export function AnimationRuntime() {
   useEffect(() => {
     if (previousPath.current === pathname) return;
     previousPath.current = pathname;
+    // The route committed (link, back/forward or redirect): release navigation
+    // locks and page-level UI state, end page-scoped sequences.
+    endNavigation();
     stopScope("page");
     // Next.js sets the scroll position for the new route during commit; sync after it.
     const frame = requestAnimationFrame(() => {

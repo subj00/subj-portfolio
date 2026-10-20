@@ -14,6 +14,7 @@ import { sceneRigs } from "@/runtime/scene/scene-rigs";
 import { stageStore } from "@/stores/stage-store";
 import { createAnchorFrame, sampleAnchor } from "../../anchor-projection";
 import { useDisposable } from "../../use-disposable";
+import { InteractObject } from "./InteractObject";
 
 /**
  * TEMPORARY verification scene for /lab. Not a design: neutral greys, primitive
@@ -172,6 +173,8 @@ export default function LabScene() {
           />
         ))}
       </group>
+
+      <InteractObject />
 
       <group ref={syncAnchor}>
         <group ref={syncMotion}>

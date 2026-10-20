@@ -24,5 +24,7 @@ export const sceneRigs = {
     sync: 0,
     /** 0→1 pulse driven by a Director sequence. */
     emphasis: 0,
+    /** 0→1 activation spin of the interaction demo object (Director sequence). */
+    activate: 0,
   },
 } satisfies Record<SceneKey, Rig>;

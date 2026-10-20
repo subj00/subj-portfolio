@@ -1,4 +1,5 @@
 import { type Camera, MathUtils, PerspectiveCamera, Vector3 } from "three";
+import { normalizeInBox } from "@/interaction/gesture";
 import { getAnchor, type Rect, toViewportRect } from "@/runtime/scene/anchors";
 import type { SceneKey } from "@/runtime/scene/scene-keys";
 
@@ -88,4 +89,30 @@ export function sampleAnchor(
   if (!anchor || !(camera instanceof PerspectiveCamera) || viewport.height === 0) return false;
   projectRect(toViewportRect(anchor, _rect), viewport, camera, depth ?? depthToOrigin(camera), out);
   return true;
+}
+
+/**
+ * R3F's normalized pointer (viewport NDC) expressed relative to an anchor's
+ * box: -1…1 on both axes (y up), clamped. Returns whether the pointer is inside
+ * the box, or false when the anchor is not mounted.
+ */
+export function pointerInAnchor(
+  scene: SceneKey,
+  name: string,
+  pointer: { x: number; y: number },
+  viewport: ViewportSize,
+  out: { x: number; y: number },
+): boolean {
+  const anchor = getAnchor(scene, name);
+  if (!anchor) return false;
+  const rect = toViewportRect(anchor, _rect);
+  const clientX = ((pointer.x + 1) / 2) * viewport.width;
+  const clientY = ((1 - pointer.y) / 2) * viewport.height;
+  normalizeInBox(clientX, clientY, rect, out);
+  return (
+    clientX >= rect.left &&
+    clientX <= rect.left + rect.width &&
+    clientY >= rect.top &&
+    clientY <= rect.top + rect.height
+  );
 }

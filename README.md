@@ -61,8 +61,28 @@ useFrame(({ camera, size }) => {
 });
 ```
 
-`/lab` and `/lab/alt` are temporary verification routes (noindex). Delete them with
-`src/webgl/scenes/lab` once real scenes exist.
+## Animation and interaction
+
+| Path                                              | Role                                                          |
+| ------------------------------------------------- | ------------------------------------------------------------- |
+| `src/animation/gsap.ts`                           | Only place GSAP plugins are registered; `MOTION_QUERIES`      |
+| `src/animation/smooth-scroll.ts`                  | Single Lenis instance on the shared ticker                    |
+| `src/animation/AnimationRuntime.tsx`              | Lenis lifecycle, ScrollTrigger refresh, route-change handling |
+| `src/animation/director.ts`                       | Exclusive channels for cross-component sequences              |
+| `src/runtime/scene/scene-rigs.ts`                 | Plain-number rigs: GSAP writes, scenes read in `useFrame`     |
+| `src/interaction/`                                | Gesture math, `usePointerTracker`, `useDrag` (DOM)            |
+| `src/webgl/interaction/use-object-interaction.ts` | Hover/tap/drag for R3F objects on R3F's own raycasting        |
+| `src/stores/ui-store.ts`                          | Menu, navigation pending, selection, interaction locks        |
+| `src/components/navigation/`                      | `TransitionLink`, `NavMenu`                                   |
+
+Ownership: one writer per transform layer (anchor → scroll/motion → pointer → drag → spin);
+component-local animation uses `useGSAP`; only cross-component sequences use the Director.
+
+## Temporary lab routes
+
+`/lab`, `/lab/alt`, `/lab/scroll` and `/lab/interact` are verification routes (noindex). Delete
+`src/app/lab`, `src/webgl/scenes/lab`, `src/animation/sequences/lab-activate.ts` and the `lab`
+entries in `scene-keys.ts`, `scene-rigs.ts` and `scenes/registry.ts` once real scenes exist.
 
 ## Next.js 16 notes
 
