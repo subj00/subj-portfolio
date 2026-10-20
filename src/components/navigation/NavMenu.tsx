@@ -1,22 +1,14 @@
 "use client";
 
-import type { Route } from "next";
-import { usePathname } from "next/navigation";
 import { type ReactNode, useEffect, useId, useRef } from "react";
 import { lockScroll } from "@/animation/scroll-lock";
-import type { LocalizedPath } from "@/i18n/routes";
 import { watchMedia } from "@/lib/device";
 import { setMenuOpen, useUi } from "@/stores/ui-store";
-import { TransitionLink } from "./TransitionLink";
-
-export interface NavItem {
-  href: LocalizedPath | Route;
-  label: string;
-}
 
 /**
  * Mobile menu: a real <button> (disclosure pattern: aria-expanded,
- * aria-controls) that opens a full-screen panel of links.
+ * aria-controls) that opens a full-screen panel. The caller provides the panel
+ * content (navigation links, language switcher); this component owns behavior.
  *
  * Open state lives in ui-store so other parts (scene dimming, transitions) can
  * react to it. While open: background scrolling is locked, and the page behind
@@ -25,7 +17,7 @@ export interface NavItem {
  * reaches `closeWhen` (the layout that no longer shows this menu).
  */
 export function NavMenu({
-  items,
+  children,
   openLabel = "Open menu",
   closeLabel = "Close menu",
   closeWhen,
@@ -33,18 +25,18 @@ export function NavMenu({
   lockBackgroundScroll = true,
   className,
 }: {
-  items: NavItem[];
+  /** Panel content, e.g. a <nav> of links. */
+  children: ReactNode;
   openLabel?: string;
   closeLabel?: string;
   /** Media query at which the menu is not used (e.g. the wide layout). */
   closeWhen?: string;
-  /** Extra panel content below the links (e.g. the language switcher). */
+  /** Panel content pinned to the bottom (e.g. the language switcher). */
   footer?: ReactNode;
   lockBackgroundScroll?: boolean;
   className?: string;
 }) {
   const open = useUi((s) => s.menuOpen);
-  const pathname = usePathname();
   const panelId = useId();
   const root = useRef<HTMLDivElement>(null);
   const toggle = useRef<HTMLButtonElement>(null);
@@ -124,23 +116,7 @@ export function NavMenu({
         hidden={!open}
         className="fixed inset-0 flex flex-col justify-between overflow-y-auto bg-ink pt-[calc(var(--header-h)+env(safe-area-inset-top)+2rem)] pr-[var(--gutter-r)] pb-[calc(2rem+env(safe-area-inset-bottom))] pl-[var(--gutter-l)]"
       >
-        <ul className="grid gap-2">
-          {items.map((item) => (
-            <li key={item.href}>
-              <TransitionLink
-                href={item.href}
-                aria-current={item.href === pathname ? "page" : undefined}
-                className="group/link inline-flex min-h-14 items-center gap-4 text-[clamp(1.375rem,7vw,2rem)] font-light tracking-[0.18em] text-mist uppercase transition-colors hover:text-paper aria-[current=page]:text-paper"
-              >
-                <span
-                  aria-hidden
-                  className="size-1.5 rounded-full bg-accent-bright opacity-0 group-aria-[current=page]/link:opacity-100"
-                />
-                {item.label}
-              </TransitionLink>
-            </li>
-          ))}
-        </ul>
+        {children}
         {footer}
       </div>
     </div>

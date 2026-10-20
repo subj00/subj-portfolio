@@ -84,3 +84,8 @@ export function acquireSmoothScroll(): () => void {
     if (--owners === 0) stopSmoothScroll();
   };
 }
+
+/** The running Lenis instance, or null when native scrolling is in charge. */
+export function getSmoothScroll(): Lenis | null {
+  return lenis;
+}

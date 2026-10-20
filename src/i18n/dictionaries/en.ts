@@ -9,14 +9,12 @@ export const en: Dictionary = {
         description:
           "Building modern web experiences through clean code, interaction, and thoughtful design.",
       },
-      about: { title: "About me", description: "Who I am, what I do and how I work." },
-      projects: { title: "Projects", description: "Selected projects and case studies." },
     },
   },
   nav: {
     label: "Main navigation",
     skipToContent: "Skip to content",
-    pages: { home: "Home", about: "About me", projects: "Projects" },
+    sections: { home: "Home", about: "About me", projects: "Projects", contact: "Contact" },
     menuOpen: "Open menu",
     menuClose: "Close menu",
   },
@@ -31,7 +29,7 @@ export const en: Dictionary = {
     scroll: "Scroll",
   },
   placeholder: {
-    inProgress: "This page is being built.",
+    inProgress: "This section is being built.",
   },
   notFound: {
     title: "Page not found",

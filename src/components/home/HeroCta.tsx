@@ -1,23 +1,27 @@
-import { TransitionLink } from "@/components/navigation/TransitionLink";
-import type { LocalizedPath } from "@/i18n/routes";
+import { SectionLink } from "@/components/navigation/SectionLink";
+import type { Locale } from "@/i18n/config";
+import type { SectionKey } from "@/i18n/sections";
 
 /**
  * Circular-accent call to action: a thin red ring with a dot, followed by a
- * letter-spaced label. The whole row is one link (keyboard and touch target),
- * with a hover/focus state on the ring only.
+ * letter-spaced label. The whole row is one link (keyboard and touch target)
+ * to a section of the page, with a hover/focus state on the ring only.
  */
 export function HeroCta({
-  href,
+  locale,
+  section,
   label,
   className,
 }: {
-  href: LocalizedPath;
+  locale: Locale;
+  section: SectionKey;
   label: string;
   className?: string;
 }) {
   return (
-    <TransitionLink
-      href={href}
+    <SectionLink
+      locale={locale}
+      section={section}
       className={`group inline-flex items-center gap-[clamp(1rem,1.5vw,1.5rem)] ${className ?? ""}`}
     >
       <span
@@ -29,6 +33,6 @@ export function HeroCta({
       <span className="text-[clamp(0.625rem,0.75vw,0.8125rem)] tracking-[0.4em] text-paper uppercase">
         {label}
       </span>
-    </TransitionLink>
+    </SectionLink>
   );
 }

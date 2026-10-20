@@ -1,12 +1,14 @@
 "use client";
 
-import { usePathname } from "next/navigation";
 import { HTML_LANG, type Locale, LOCALE_NAMES, LOCALE_SHORT, LOCALES } from "@/i18n/config";
-import { localizedPath, matchRoute } from "@/i18n/routes";
+import { localizedPath } from "@/i18n/routes";
+import { isSectionKey, sectionHref } from "@/i18n/sections";
+import { useMotion } from "@/stores/motion-store";
 import { TransitionLink } from "./TransitionLink";
 
 /**
- * Links to the current page in every language (e.g. /sr/o-meni ⇄ /en/about).
+ * Links to the same place in every language: the one-page portfolio at the
+ * section currently in view (/sr#o-meni ⇄ /en#about), or the top of the page.
  * Each option's accessible name is its endonym in its own language (lang and
  * hreflang set), so screen readers pronounce it correctly.
  *
@@ -27,7 +29,11 @@ export function LanguageSwitcher({
   variant?: "compact" | "full";
   className?: string;
 }) {
-  const page = matchRoute(usePathname())?.page ?? "home";
+  const active = useMotion((s) => s.activeSection);
+  const hrefFor = (locale: Locale) =>
+    isSectionKey(active) && active !== "home"
+      ? sectionHref(locale, active)
+      : localizedPath("home", locale);
 
   return (
     <nav aria-label={label} className={className}>
@@ -35,7 +41,7 @@ export function LanguageSwitcher({
         {LOCALES.map((locale) => (
           <li key={locale}>
             <TransitionLink
-              href={localizedPath(page, locale)}
+              href={hrefFor(locale)}
               lang={HTML_LANG[locale]}
               hrefLang={HTML_LANG[locale]}
               aria-label={variant === "compact" ? LOCALE_NAMES[locale] : undefined}

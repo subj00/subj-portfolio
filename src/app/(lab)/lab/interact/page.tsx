@@ -1,4 +1,5 @@
 import { NavMenu } from "@/components/navigation/NavMenu";
+import { TransitionLink } from "@/components/navigation/TransitionLink";
 import { SceneAnchor } from "@/runtime/scene/SceneAnchor";
 import { InteractionControls } from "./_demo/InteractionControls";
 
@@ -14,13 +15,19 @@ export default function LabInteractPage() {
       </ul>
 
       <div className="mt-6">
-        <NavMenu
-          items={[
-            { href: "/lab", label: "Lab A" },
-            { href: "/lab/scroll", label: "Scroll lab" },
-            { href: "/lab/interact", label: "Interaction lab" },
-          ]}
-        />
+        <NavMenu>
+          <ul className="grid gap-2 text-2xl">
+            <li>
+              <TransitionLink href="/lab">Lab A</TransitionLink>
+            </li>
+            <li>
+              <TransitionLink href="/lab/scroll">Scroll lab</TransitionLink>
+            </li>
+            <li>
+              <TransitionLink href="/lab/interact">Interaction lab</TransitionLink>
+            </li>
+          </ul>
+        </NavMenu>
       </div>
 
       {/* touch-pan-y: horizontal drags reach the 3D object, vertical swipes scroll natively. */}

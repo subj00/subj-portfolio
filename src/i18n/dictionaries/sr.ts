@@ -9,14 +9,12 @@ export const sr: Dictionary = {
         description:
           "Razvijam savremena web iskustva kroz čist kod, interakciju i promišljen dizajn.",
       },
-      about: { title: "O meni", description: "Ko sam, šta radim i kako radim." },
-      projects: { title: "Projekti", description: "Izabrani projekti i studije slučaja." },
     },
   },
   nav: {
     label: "Glavna navigacija",
     skipToContent: "Preskoči na sadržaj",
-    pages: { home: "Početna", about: "O meni", projects: "Projekti" },
+    sections: { home: "Početna", about: "O meni", projects: "Projekti", contact: "Kontakt" },
     menuOpen: "Otvori meni",
     menuClose: "Zatvori meni",
   },
@@ -30,7 +28,7 @@ export const sr: Dictionary = {
     scroll: "Skroluj",
   },
   placeholder: {
-    inProgress: "Ova stranica je u izradi.",
+    inProgress: "Ova sekcija je u izradi.",
   },
   notFound: {
     title: "Stranica nije pronađena",

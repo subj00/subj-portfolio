@@ -74,10 +74,30 @@ useFrame(({ camera, size }) => {
 | `src/interaction/`                                | Gesture math, `usePointerTracker`, `useDrag` (DOM)            |
 | `src/webgl/interaction/use-object-interaction.ts` | Hover/tap/drag for R3F objects on R3F's own raycasting        |
 | `src/stores/ui-store.ts`                          | Menu, navigation pending, selection, interaction locks        |
-| `src/components/navigation/`                      | `TransitionLink`, `NavMenu`                                   |
+| `src/components/navigation/`                      | `SectionLink`, `SectionNav`, `TransitionLink`, `NavMenu`      |
 
 Ownership: one writer per transform layer (anchor → scroll/motion → pointer → drag → spin);
 component-local animation uses `useGSAP`; only cross-component sequences use the Director.
+
+## One-page structure
+
+The portfolio is a single continuous page per locale (`/sr`, `/en`). Its sections, in scroll
+order, are defined in `src/i18n/sections.ts` with localized anchors:
+
+| Section  | Serbian     | English     |
+| -------- | ----------- | ----------- |
+| Home     | `#pocetna`  | `#home`     |
+| About    | `#o-meni`   | `#about`    |
+| Projects | `#projekti` | `#projects` |
+| Contact  | `#kontakt`  | `#contact`  |
+
+- Each section is a `PortfolioSection` (registers with section activation → nav current item).
+- `SectionLink` is a real `next/link` to `/sr#o-meni`: works without JS and in new tabs; on the
+  page it lets Next push the history entry, waits until the browser has saved the scroll position
+  of the entry being left, then scrolls smoothly (Lenis, or native on touch; instant with reduced
+  motion) and moves focus into the section. Back/Forward restore exact positions.
+- The language switcher keeps the current section (`/sr#projekti` ⇄ `/en#projects`).
+- New routes (e.g. project detail pages) go in `src/i18n/routes.ts` and `app/[lang]/…`.
 
 ## Temporary lab routes
 

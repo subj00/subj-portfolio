@@ -1,4 +1,5 @@
 import type { PageKey } from "../routes";
+import type { SectionKey } from "../sections";
 
 /**
  * Every visible UI string. Both locales implement this interface, so a missing
@@ -14,7 +15,8 @@ export interface Dictionary {
     /** Accessible name of the primary <nav>. */
     label: string;
     skipToContent: string;
-    pages: Record<PageKey, string>;
+    /** Section labels, also used as the section headings. */
+    sections: Record<SectionKey, string>;
     menuOpen: string;
     menuClose: string;
   };

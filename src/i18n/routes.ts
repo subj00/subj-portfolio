@@ -2,23 +2,24 @@ import type { Route } from "next";
 import { type Locale, LOCALES } from "./config";
 
 /**
- * The single source of truth for localized URLs. Every link, the language
- * switcher, hreflang alternates and the sitemap derive from this table, so a
- * slug is changed in exactly one place (plus its route folder).
+ * The single source of truth for localized URLs: links, the language switcher,
+ * hreflang alternates and the sitemap derive from this table.
+ *
+ * The portfolio is ONE continuous page per locale; About, Projects and Contact
+ * are sections of it (see sections.ts), not routes. Future routes (e.g. project
+ * detail pages) are added here with their localized slugs.
  */
-export const PAGE_KEYS = ["home", "about", "projects"] as const;
+export const PAGE_KEYS = ["home"] as const;
 export type PageKey = (typeof PAGE_KEYS)[number];
 
 /**
- * Typed-routes check for one literal path: `route("/sr/o-meni")` compiles only
+ * Typed-routes check for one literal path: `route("/sr")` compiles only
  * if a matching route folder exists (dynamic segments need the literal inferred).
  */
 const route = <T extends string>(path: Route<T>) => path;
 
 export const ROUTES = {
   home: { sr: route("/sr"), en: route("/en") },
-  about: { sr: route("/sr/o-meni"), en: route("/en/about") },
-  projects: { sr: route("/sr/projekti"), en: route("/en/projects") },
 } as const satisfies Record<PageKey, Record<Locale, string>>;
 
 export type LocalizedPath = (typeof ROUTES)[PageKey][Locale];
