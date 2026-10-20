@@ -21,7 +21,7 @@ import { StageErrorBoundary } from "./StageErrorBoundary";
 const MAX_CONTEXT_LOSSES = 2;
 let contextLosses = 0;
 
-/** Canvases whose context we released on purpose (hidden shell): not a failure. */
+/** Canvases whose context was released on purpose (final unmount): not a failure. */
 const releasedCanvases = new WeakSet<HTMLCanvasElement>();
 
 function isEffectivelyVisible(object: Object3D) {
@@ -43,14 +43,10 @@ const stageEvents = (store: Parameters<typeof createPointerEvents>[0]) => ({
 
 /**
  * The persistent WebGL stage: one fixed, full-viewport canvas behind the DOM.
- * Mounted once by ExperienceRoot and kept across navigation. It is remounted
- * (via `key`) only to recover from a lost WebGL context, or when its app shell
- * becomes visible again after being hidden.
- *
- * Hidden shells: after a language switch Next keeps the previous locale's shell
- * mounted but hidden (cacheComponents / Activity), Stage included. Its effects
- * clean up on hide, which swaps in a fresh Canvas: R3F disposes the old one
- * (GPU memory back) and the new one gets a context only once shown again (Back).
+ * Rendered by the shared stage host (src/runtime/stage-host.tsx) outside the
+ * route tree, so it survives navigation and language switches (each locale is
+ * its own app shell). It is remounted (via `key`) only to recover from a lost
+ * WebGL context.
  */
 export default function Stage() {
   const tier = useStage((s) => s.tier);
@@ -63,19 +59,13 @@ export default function Stage() {
   const remount = useCallback(() => setGeneration((g) => g + 1), []);
   const renderer = useRef<WebGLRenderer | null>(null);
 
-  // Hidden (or removed): replace the Canvas. R3F keeps its root alive through
-  // Activity hiding, but releases it fully (scene, renderer, context; once) when
-  // the Canvas element is removed, which React 19.2 does inside hidden trees too.
-  // The replacement creates no context until the shell is shown again.
+  // Final unmount (stage-host teardown): R3F disposes the scene and renderer and
+  // loses the context on purpose; that loss is not a failure.
   useEffect(
     () => () => {
-      const gl = renderer.current;
-      if (!gl) return; // nothing created yet (e.g. Strict Mode's dev re-run)
-      releasedCanvases.add(gl.domElement);
-      renderer.current = null;
-      remount();
+      if (renderer.current) releasedCanvases.add(renderer.current.domElement);
     },
-    [remount],
+    [],
   );
 
   return (

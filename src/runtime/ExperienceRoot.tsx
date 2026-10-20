@@ -1,12 +1,12 @@
 "use client";
 
-import dynamic from "next/dynamic";
 import { type ReactNode, useEffect } from "react";
 import { AnimationRuntime } from "@/animation/AnimationRuntime";
 import { detectWebGL2, initialQualityTier, readDeviceProfile, watchMedia } from "@/lib/device";
 import { motionStore } from "@/stores/motion-store";
-import { type StageStatus, setStageStatus, stageStore, useStage } from "@/stores/stage-store";
+import { setStageStatus, stageStore, useStage } from "@/stores/stage-store";
 import { uiStore } from "@/stores/ui-store";
+import { acquireStage } from "./stage-host";
 
 if (process.env.NODE_ENV !== "production" && typeof window !== "undefined") {
   // Dev-only handle for inspecting shared state from devtools.
@@ -17,11 +17,6 @@ if (process.env.NODE_ENV !== "production" && typeof window !== "undefined") {
   };
 }
 
-// The only route into the WebGL chunk (three, R3F, drei, scenes).
-const Stage = dynamic(() => import("@/webgl/Stage"), { ssr: false });
-
-const STAGE_MOUNTED: ReadonlySet<StageStatus> = new Set(["loading", "ready", "lost"]);
-
 /**
  * App-wide client runtime, mounted once in the root layout so it survives
  * navigation. Server-rendered `children` pass through untouched.
@@ -31,12 +26,16 @@ const STAGE_MOUNTED: ReadonlySet<StageStatus> = new Set(["loading", "ready", "lo
  *   loading -> ready (renderer created) <-> lost (context loss, remount on restore)
  *   any -> unsupported | error  (Stage unmounts; DOM content is the fallback)
  *
- * The Stage is never unmounted once loaded, so the GL context, compiled shaders
- * and uploaded assets persist across routes.
+ * The Stage itself lives in a shared root outside the route tree (stage-host),
+ * so the GL context, compiled shaders, scenes and their animation state persist
+ * across routes and across language switches (a separate app shell per locale).
  */
 export function ExperienceRoot({ children }: { children: ReactNode }) {
   const status = useStage((s) => s.status);
   const wantsStage = useStage((s) => Object.keys(s.sceneRefs).length > 0);
+
+  // Hold the shared stage while this shell is shown (released when hidden).
+  useEffect(() => acquireStage(), []);
 
   // Device profile and motion preference.
   useEffect(() => {
@@ -73,7 +72,6 @@ export function ExperienceRoot({ children }: { children: ReactNode }) {
       <AnimationRuntime />
       {/* Content stacks above the fixed canvas. */}
       <div className="relative z-[1]">{children}</div>
-      {STAGE_MOUNTED.has(status) && <Stage />}
     </>
   );
 }
