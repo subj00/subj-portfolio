@@ -23,7 +23,7 @@ export const sr: Dictionary = {
   },
   home: {
     role: "Frontend developer",
-    intro: "Razvijam savremena web iskustva kroz čist kod, interakciju i promišljen dizajn.",
+    intro: "Kod koji pomera granice.",
     cta: "Pogledaj projekte",
     scroll: "Skroluj",
   },

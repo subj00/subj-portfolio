@@ -36,7 +36,8 @@ export interface DragCallbacks {
 export interface ObjectInteractionOptions {
   /** Extra gate on top of the global interaction lock. */
   enabled?: () => boolean;
-  onActivate?: () => void;
+  /** Click/tap without drag. The event carries the hit (event.point, event.face). */
+  onActivate?: (event: ThreeEvent<MouseEvent>) => void;
   onHoverChange?: (hovered: boolean) => void;
   /** Enables pointer-captured dragging on this object. */
   drag?: DragCallbacks;
@@ -49,6 +50,18 @@ interface CaptureTarget {
 }
 
 type PointerHandler = (event: ThreeEvent<PointerEvent>) => void;
+
+const DOM_CONTROLS =
+  "a, button, input, select, textarea, summary, [role='button'], [contenteditable]";
+
+/**
+ * Input priority: the canvas sits behind the DOM and R3F listens on the body, so
+ * a ray can hit an object under a link or button. The DOM control wins.
+ */
+function overDomControl(event: { nativeEvent: Event }) {
+  const target = event.nativeEvent.target;
+  return target instanceof Element && target.closest(DOM_CONTROLS) !== null;
+}
 
 export interface ObjectInteractionHandlers {
   onPointerOver: PointerHandler;
@@ -103,7 +116,7 @@ export function useObjectInteraction(options: ObjectInteractionOptions) {
     const handlers: ObjectInteractionHandlers = {
       onPointerOver(event) {
         event.stopPropagation();
-        if (event.pointerType === "touch" || !allowed()) return;
+        if (event.pointerType === "touch" || !allowed() || overDomControl(event)) return;
         setHovered(true);
       },
       onPointerOut() {
@@ -143,9 +156,9 @@ export function useObjectInteraction(options: ObjectInteractionOptions) {
         if (event.pointerId === press.current.pointerId) endPress(true);
       },
       onClick(event) {
-        if (event.delta > TAP_SLOP_PX || !allowed()) return;
+        if (event.delta > TAP_SLOP_PX || !allowed() || overDomControl(event)) return;
         event.stopPropagation();
-        latest.current.onActivate?.();
+        latest.current.onActivate?.(event);
       },
     };
 

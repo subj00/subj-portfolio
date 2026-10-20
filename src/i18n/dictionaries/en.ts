@@ -23,8 +23,7 @@ export const en: Dictionary = {
   },
   home: {
     role: "Frontend developer",
-    intro:
-      "Building modern web experiences through clean code, interaction, and thoughtful design.",
+    intro: "Code beyond boundaries.",
     cta: "View my work",
     scroll: "Scroll",
   },

@@ -28,6 +28,9 @@
   --gutter-r: var(--gutter-l);
   --header-h: 5rem;
 
+  /* Hero tagline face (Space Grotesk, loaded in RootDocument). */
+  --font-editorial: var(--font-space-grotesk), var(--font-jost), ui-sans-serif, sans-serif;
+
   color-scheme: dark;
   background: var(--color-ink);
   color: var(--color-paper);

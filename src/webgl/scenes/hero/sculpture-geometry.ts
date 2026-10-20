@@ -29,12 +29,40 @@ export interface SculptureDetail {
   trailSegments: number;
   /** Floating sparks (0 = none). */
   sparks: number;
+  /** Sparks emitted per click/tap impact. */
+  burst: number;
+  /** Full vein shader (fine filaments + hotspots); off on the low tier. */
+  detailedVeins: boolean;
 }
 
 export const SCULPTURE_DETAIL: Record<QualityTier, SculptureDetail> = {
-  high: { coreDetail: 28, ribbonSegments: 220, ribbonRows: 10, trailSegments: 360, sparks: 56 },
-  medium: { coreDetail: 20, ribbonSegments: 160, ribbonRows: 8, trailSegments: 260, sparks: 36 },
-  low: { coreDetail: 12, ribbonSegments: 110, ribbonRows: 6, trailSegments: 180, sparks: 0 },
+  high: {
+    coreDetail: 32,
+    ribbonSegments: 220,
+    ribbonRows: 6,
+    trailSegments: 360,
+    sparks: 56,
+    burst: 40,
+    detailedVeins: true,
+  },
+  medium: {
+    coreDetail: 24,
+    ribbonSegments: 160,
+    ribbonRows: 5,
+    trailSegments: 260,
+    sparks: 36,
+    burst: 28,
+    detailedVeins: true,
+  },
+  low: {
+    coreDetail: 14,
+    ribbonSegments: 110,
+    ribbonRows: 4,
+    trailSegments: 180,
+    sparks: 0,
+    burst: 16,
+    detailedVeins: false,
+  },
 };
 
 /**
@@ -89,64 +117,41 @@ export interface RibbonSpec {
 }
 
 /**
- * The shells: wide, tapered bands that wrap around the core. Each band is swept
- * along an undulating path and then PROJECTED ONTO A SPHERE of its radius, so it
- * curves like a fragment of a shell (convex across its width), not a flat strip.
- * Different radii keep the layers apart and leave openings onto the core.
+ * Structural blades: a few refined, tapered bands that wrap part of the core.
+ * Each is swept along an undulating path and PROJECTED ONTO A SPHERE of its
+ * radius, so it curves like a fragment of a shell rather than a flat strip.
+ * Kept thin and few so the veined surface, not the bands, carries the object.
  */
 export const RIBBONS: readonly RibbonSpec[] = [
-  // Two broad shells over the upper-left/front: the dominant red mass in the reference.
   {
-    radius: 1.04,
+    radius: 1.06,
     tilt: [0.5, 0.3, -0.75],
-    start: 1.1,
-    sweep: 3.1,
-    width: 0.5,
+    start: 1.2,
+    sweep: 2.9,
+    width: 0.11,
     lift: 0.16,
     wobble: 0.02,
     phase: 0.3,
   },
   {
-    radius: 1.09,
-    tilt: [0.05, -0.35, -1.0],
-    start: 1.5,
-    sweep: 2.6,
-    width: 0.36,
-    lift: 0.2,
-    wobble: 0.025,
-    phase: 1.7,
-  },
-  // Narrower bands crossing the front, leaving openings onto the dark core.
-  {
-    radius: 1.13,
+    radius: 1.12,
     tilt: [1.15, -0.2, 0.55],
-    start: 2.2,
-    sweep: 2.3,
-    width: 0.16,
+    start: 2.0,
+    sweep: 2.5,
+    width: 0.065,
     lift: 0.14,
     wobble: 0.03,
     phase: 2.9,
   },
   {
-    radius: 1.17,
+    radius: 1.2,
     tilt: [-0.55, 0.95, -0.45],
     start: 0.9,
-    sweep: 1.9,
-    width: 0.09,
+    sweep: 2.2,
+    width: 0.035,
     lift: 0.24,
     wobble: 0.03,
     phase: 4.2,
-  },
-  // A thin outer blade sweeping past the silhouette.
-  {
-    radius: 1.24,
-    tilt: [0.75, 0.5, -0.3],
-    start: 1.4,
-    sweep: 2.3,
-    width: 0.045,
-    lift: 0.28,
-    wobble: 0.04,
-    phase: 0.9,
   },
 ];
 
@@ -317,4 +322,81 @@ export function createSparkGeometry(count: number): BufferGeometry {
   geometry.setAttribute("position", new Float32BufferAttribute(positions, 3));
   geometry.setAttribute("phase", new Float32BufferAttribute(phases, 1));
   return geometry;
+}
+
+/**
+ * Pool for click/tap spark bursts: `count` points with per-point origin,
+ * velocity, start time and seed (all animated in the vertex shader). The CPU
+ * rewrites a burst's worth of slots per impact; nothing is allocated later.
+ */
+export function createBurstGeometry(count: number): BufferGeometry {
+  const geometry = new BufferGeometry();
+  // Unused by the shader but required by three.js for a Points draw.
+  geometry.setAttribute("position", new Float32BufferAttribute(new Float32Array(count * 3), 3));
+  geometry.setAttribute("aOrigin", new Float32BufferAttribute(new Float32Array(count * 3), 3));
+  geometry.setAttribute("aVelocity", new Float32BufferAttribute(new Float32Array(count * 3), 3));
+  geometry.setAttribute(
+    "aStart",
+    new Float32BufferAttribute(new Float32Array(count).fill(-1000), 1),
+  );
+  const random = seededRandom(11);
+  geometry.setAttribute(
+    "aSeed",
+    new Float32BufferAttribute(
+      Float32Array.from({ length: count }, () => random()),
+      1,
+    ),
+  );
+  return geometry;
+}
+
+const _tangent = new Vector3();
+const _bitangent = new Vector3();
+const _velocity = new Vector3();
+
+/**
+ * Writes one burst into the pool, starting at slot `first`: sparks leave the
+ * contact point along the surface normal, fanned out in a cone.
+ */
+export function emitBurst(
+  geometry: BufferGeometry,
+  first: number,
+  count: number,
+  point: Vector3,
+  normal: Vector3,
+  clock: number,
+  random: () => number,
+) {
+  const origin = geometry.getAttribute("aOrigin");
+  const velocity = geometry.getAttribute("aVelocity");
+  const start = geometry.getAttribute("aStart");
+  _tangent.set(0, 1, 0);
+  if (Math.abs(normal.y) > 0.9) _tangent.set(1, 0, 0);
+  _tangent.cross(normal).normalize();
+  _bitangent.copy(normal).cross(_tangent);
+
+  for (let i = 0; i < count; i++) {
+    const slot = (first + i) % origin.count;
+    const angle = random() * Math.PI * 2;
+    // Wide cone: most sparks fan out across the surface instead of straight at the camera.
+    const spread = 0.8 + random() * 1.6;
+    const speed = 1.3 + random() * 2.0;
+    _velocity
+      .copy(normal)
+      .addScaledVector(_tangent, Math.cos(angle) * spread)
+      .addScaledVector(_bitangent, Math.sin(angle) * spread)
+      .normalize()
+      .multiplyScalar(speed);
+    origin.setXYZ(
+      slot,
+      point.x + normal.x * 0.02,
+      point.y + normal.y * 0.02,
+      point.z + normal.z * 0.02,
+    );
+    velocity.setXYZ(slot, _velocity.x, _velocity.y, _velocity.z);
+    start.setX(slot, clock + random() * 0.04);
+  }
+  origin.needsUpdate = true;
+  velocity.needsUpdate = true;
+  start.needsUpdate = true;
 }

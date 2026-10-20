@@ -27,7 +27,7 @@ export interface Dictionary {
   home: {
     /** Small uppercase label above the name. */
     role: string;
-    /** Short introduction under the name. */
+    /** Tagline under the name (one short line). */
     intro: string;
     cta: string;
     /** Visible text of the scroll indicator. */

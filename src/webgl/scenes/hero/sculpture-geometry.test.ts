@@ -1,10 +1,12 @@
 import { Vector3 } from "three";
 import { describe, expect, it } from "vitest";
 import {
+  createBurstGeometry,
   createCoreGeometry,
   createShellGeometry,
   createSparkGeometry,
   createTrailGeometry,
+  emitBurst,
   RIBBONS,
   SCULPTURE_DETAIL,
   seededRandom,
@@ -59,5 +61,22 @@ describe("hero sculpture geometry", () => {
   it("scales detail down with the quality tier", () => {
     expect(SCULPTURE_DETAIL.low.coreDetail).toBeLessThan(SCULPTURE_DETAIL.high.coreDetail);
     expect(SCULPTURE_DETAIL.low.sparks).toBe(0);
+  });
+
+  it("emits a burst into its slots only, starting at the contact point", () => {
+    const burst = createBurstGeometry(12);
+    const point = new Vector3(0, 0, 1.02);
+    const normal = new Vector3(0, 0, 1);
+    emitBurst(burst, 10, 4, point, normal, 5, seededRandom(3)); // wraps: slots 10, 11, 0, 1
+    const start = burst.getAttribute("aStart");
+    const origin = burst.getAttribute("aOrigin");
+    const velocity = burst.getAttribute("aVelocity");
+    for (const slot of [10, 11, 0, 1]) {
+      expect(start.getX(slot)).toBeGreaterThanOrEqual(5);
+      expect(origin.getZ(slot)).toBeCloseTo(1.04, 5);
+      expect(velocity.getZ(slot)).toBeGreaterThan(0); // away from the surface
+    }
+    expect(start.getX(5)).toBeLessThan(0); // untouched slot stays idle
+    burst.dispose();
   });
 });

@@ -66,10 +66,16 @@ useFrame(({ camera, size }) => {
 `src/webgl/scenes/hero/` (Scene Registry key `hero`, anchored by `SceneAnchor hero/sculpture` in
 the hero's scene slot; CSS decides its box per layout):
 
-- `sculpture-geometry.ts` – procedural core, sphere-projected shells (merged), energy trails, sparks
-- `materials.ts` – glossy physical materials + injected flowing cracks / red rim; additive trails
+- `sculpture-geometry.ts` – procedural core, a few thin blades (merged), energy trails, sparks,
+  the impact burst pool (`emitBurst`); per-tier detail in `SCULPTURE_DETAIL`
+- `materials.ts` – glossy physical materials with injected object-space veins (domain-warped noise,
+  tunable via `VEIN_PARAMS`), impact flash/ripple (`recordImpact`) and red rim; additive effects
 - `red-environment.ts` – red-and-black HDR reflection environment (PMREM), per material
-- `HeroScene.tsx` – layers: anchor → scroll rig (`sceneRigs.hero`, Step 4) → pointer tilt → ambient
+- `HeroScene.tsx` – layers: anchor → scroll rig (`sceneRigs.hero`, Step 4) → pointer tilt → impact
+  → ambient → pose. Click/tap uses `useObjectInteraction` on an invisible proxy sphere.
+
+Additive shaders put their falloff in alpha: the canvas is transparent, so an opaque black pixel
+would show against the page background.
 
 The renderer uses Neutral tone mapping (ACES shifts saturated reds toward orange).
 

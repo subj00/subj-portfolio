@@ -1,4 +1,4 @@
-import { Jost } from "next/font/google";
+import { Jost, Space_Grotesk } from "next/font/google";
 import type { ReactNode } from "react";
 import { ExperienceRoot } from "@/runtime/ExperienceRoot";
 import "@/styles/globals.css";
@@ -11,6 +11,15 @@ const jost = Jost({
   display: "swap",
 });
 
+// Editorial sans for the hero tagline: a light, slightly technical grotesk that
+// contrasts with the high-contrast display lettering of the name.
+const spaceGrotesk = Space_Grotesk({
+  subsets: ["latin", "latin-ext"],
+  weight: "300",
+  variable: "--font-space-grotesk",
+  display: "swap",
+});
+
 /**
  * <html>/<body> shell shared by every root layout ([lang] and the lab group).
  * ExperienceRoot (WebGL stage, animation runtime) lives inside each root layout,
@@ -18,7 +27,7 @@ const jost = Jost({
  */
 export function RootDocument({ lang, children }: { lang: string; children: ReactNode }) {
   return (
-    <html lang={lang} className={jost.variable}>
+    <html lang={lang} className={`${jost.variable} ${spaceGrotesk.variable}`}>
       <body>
         <ExperienceRoot>{children}</ExperienceRoot>
       </body>
