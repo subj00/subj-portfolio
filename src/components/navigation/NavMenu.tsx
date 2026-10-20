@@ -56,6 +56,8 @@ export function NavMenu({
   const toggle = useRef<HTMLButtonElement>(null);
   const panel = useRef<HTMLDivElement>(null);
   const timeline = useRef<gsap.core.Timeline | null>(null);
+  /** Opened with Enter/Space (click detail 0) rather than a pointer. */
+  const openedWithKeyboard = useRef(false);
 
   // Built once per motion preference; rebuilt (keeping the open state) if it changes.
   useGSAP(
@@ -126,15 +128,19 @@ export function NavMenu({
     [open, lockBackgroundScroll],
   );
 
-  // Modal while open: nothing outside the menu is reachable, the 3D scene
-  // behind ignores pointers, and focus starts on the current (or first) link.
+  // Modal while open: nothing outside the menu is reachable and the 3D scene
+  // behind ignores pointers. Focus moves into the menu: onto the current (or
+  // first) link when opened from the keyboard, otherwise onto the panel itself.
+  // Script focus after a tap can match :focus-visible in some browsers (Safari,
+  // Firefox), which would paint a focus indicator nobody asked for.
   useEffect(() => {
     if (!open || !root.current) return;
     const restoreInert = inertOutside(root.current);
     const unlock = lockInteractions();
-    const target =
-      panel.current?.querySelector<HTMLElement>("a[aria-current='true']") ??
-      panel.current?.querySelector<HTMLElement>("a, button");
+    const target = openedWithKeyboard.current
+      ? (panel.current?.querySelector<HTMLElement>("a[aria-current='true']") ??
+        panel.current?.querySelector<HTMLElement>("a, button"))
+      : panel.current;
     target?.focus({ preventScroll: true });
     return () => {
       unlock();
@@ -160,7 +166,10 @@ export function NavMenu({
         aria-expanded={open}
         aria-controls={panelId}
         aria-label={open ? closeLabel : openLabel}
-        onClick={() => setMenuOpen(!open)}
+        onClick={(event) => {
+          openedWithKeyboard.current = event.detail === 0;
+          setMenuOpen(!open);
+        }}
         className="relative z-10 -mr-2.5 grid size-11 place-items-center rounded-full focus-visible:outline-1 focus-visible:outline-offset-2 focus-visible:outline-accent-bright"
       >
         {/* Three hairlines 6px apart; the timeline folds them into an ×. */}
@@ -175,6 +184,7 @@ export function NavMenu({
         ref={panel}
         id={panelId}
         hidden
+        tabIndex={-1}
         data-lenis-prevent
         className="fixed inset-0 overflow-y-auto overscroll-contain [clip-path:inset(0_0_100%_0)]"
       >

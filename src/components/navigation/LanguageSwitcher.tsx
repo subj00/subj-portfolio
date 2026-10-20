@@ -46,7 +46,7 @@ export function LanguageSwitcher({
               hrefLang={HTML_LANG[locale]}
               aria-label={variant === "compact" ? LOCALE_NAMES[locale] : undefined}
               aria-current={locale === current ? "true" : undefined}
-              className={`inline-flex min-h-11 min-w-6 items-center justify-center tracking-[0.22em] text-mist uppercase transition-colors hover:text-paper aria-[current=true]:text-paper ${
+              className={`inline-flex min-h-11 min-w-6 items-center justify-center tracking-[0.22em] text-mist uppercase transition-colors outline-none hover:text-paper focus-visible:text-paper focus-visible:underline focus-visible:decoration-accent-bright focus-visible:decoration-1 focus-visible:underline-offset-[0.5em] aria-[current=true]:text-paper ${
                 variant === "compact" ? "text-[clamp(0.6875rem,0.77vw,0.8125rem)]" : "text-xs"
               }`}
             >

@@ -80,11 +80,20 @@ export function SectionNav({
   );
 }
 
+/*
+ * Focus (keyboard only, :focus-visible): no box. Nav items show a thin red
+ * underline under the label instead; the current section keeps its own accent
+ * (red dot in the bar, red hairline in the menu). Mouse and touch show neither.
+ */
+const FOCUS_UNDERLINE =
+  "outline-none focus-visible:text-paper focus-visible:underline focus-visible:decoration-accent-bright focus-visible:decoration-1 focus-visible:underline-offset-[0.4em]";
+
 const BAR_LINK =
-  "relative inline-flex min-h-11 items-center text-[clamp(0.6875rem,0.77vw,0.8125rem)] tracking-[0.22em] text-mist uppercase transition-colors hover:text-paper aria-[current=true]:text-paper aria-[current=true]:after:absolute aria-[current=true]:after:top-[calc(50%+0.95em)] aria-[current=true]:after:left-1/2 aria-[current=true]:after:size-1 aria-[current=true]:after:-translate-x-1/2 aria-[current=true]:after:rounded-full aria-[current=true]:after:bg-accent-bright";
+  FOCUS_UNDERLINE +
+  " relative inline-flex min-h-11 items-center text-[clamp(0.6875rem,0.77vw,0.8125rem)] tracking-[0.22em] text-mist uppercase transition-colors hover:text-paper aria-[current=true]:text-paper aria-[current=true]:after:absolute aria-[current=true]:after:top-[calc(50%+0.95em)] aria-[current=true]:after:left-1/2 aria-[current=true]:after:size-1 aria-[current=true]:after:-translate-x-1/2 aria-[current=true]:after:rounded-full aria-[current=true]:after:bg-accent-bright";
 
 const MENU_LINK =
-  "group/link flex min-h-11 w-full items-center gap-[clamp(1rem,5vw,1.75rem)] py-[clamp(0.375rem,2.3svh,1.125rem)] outline-none focus-visible:outline-1 focus-visible:outline-offset-[-1px] focus-visible:outline-accent-bright";
+  "group/link flex min-h-11 w-full items-center gap-[clamp(1rem,5vw,1.75rem)] py-[clamp(0.375rem,2.3svh,1.125rem)] outline-none";
 
 /** Section number and the hairline after it (red for the current section). */
 const MENU_META =
@@ -94,4 +103,4 @@ const MENU_INDICATOR =
   "h-px w-3 bg-line transition-[width,background-color] duration-300 group-hover/link:w-5 group-hover/link:bg-paper/50 group-focus-visible/link:w-5 group-aria-[current=true]/link:w-5 group-aria-[current=true]/link:bg-accent-bright";
 
 const MENU_LABEL =
-  "block text-[clamp(1.875rem,min(10.5vw,7.5svh),3.25rem)] leading-[1.08] font-light tracking-[0.05em] text-paper/55 uppercase transition-colors duration-300 group-hover/link:text-paper group-focus-visible/link:text-paper group-aria-[current=true]/link:text-paper";
+  "block text-[clamp(1.875rem,min(10.5vw,7.5svh),3.25rem)] leading-[1.08] font-light tracking-[0.05em] text-paper/55 uppercase transition-colors duration-300 group-hover/link:text-paper group-focus-visible/link:text-paper group-aria-[current=true]/link:text-paper decoration-accent-bright decoration-1 underline-offset-[0.16em] group-focus-visible/link:underline";

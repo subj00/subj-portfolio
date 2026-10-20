@@ -57,13 +57,20 @@ body {
   color: #fff;
 }
 
-:focus-visible {
-  outline: 1px solid var(--color-accent-bright);
-  outline-offset: 4px;
-}
+/*
+ * Default keyboard focus ring. In the base layer so components can replace it
+ * with their own :focus-visible treatment (utilities win over base); unlayered,
+ * it would override every utility and force a box on everything.
+ */
+@layer base {
+  :focus-visible {
+    outline: 1px solid var(--color-accent-bright);
+    outline-offset: 4px;
+  }
 
-/* Programmatic focus targets (sections, <main>) receive focus for screen readers
-   after in-page navigation; they are not controls and never show a ring. */
-[tabindex="-1"]:focus {
-  outline: none;
+  /* Programmatic focus targets (sections, <main>) receive focus for screen readers
+     after in-page navigation; they are not controls and never show a ring. */
+  [tabindex="-1"]:focus {
+    outline: none;
+  }
 }

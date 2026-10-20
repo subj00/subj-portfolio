@@ -12,7 +12,7 @@ export function BrandMark({ locale, label }: { locale: Locale; label: string }) 
       locale={locale}
       section="home"
       aria-label={label}
-      className="relative z-10 inline-flex min-h-11 items-center justify-self-start text-[clamp(1.875rem,2.9vw,2.75rem)] leading-none font-extralight tracking-[-0.12em] text-accent transition-colors hover:text-accent-bright"
+      className="relative z-10 inline-flex min-h-11 items-center justify-self-start text-[clamp(1.875rem,2.9vw,2.75rem)] leading-none font-extralight tracking-[-0.12em] text-accent transition-colors outline-none hover:text-accent-bright focus-visible:text-accent-bright focus-visible:underline focus-visible:decoration-1 focus-visible:underline-offset-[0.18em]"
     >
       <span aria-hidden>JS</span>
     </SectionLink>
