@@ -9,13 +9,21 @@ import { type Locale, LOCALES } from "./config";
 export const PAGE_KEYS = ["home", "about", "projects"] as const;
 export type PageKey = (typeof PAGE_KEYS)[number];
 
-export const ROUTES = {
-  home: { sr: "/sr", en: "/en" },
-  about: { sr: "/sr/o-meni", en: "/en/about" },
-  projects: { sr: "/sr/projekti", en: "/en/projects" },
-} as const satisfies Record<PageKey, Record<Locale, Route>>;
+/**
+ * Typed-routes check for one literal path: `route("/sr/o-meni")` compiles only
+ * if a matching route folder exists (dynamic segments need the literal inferred).
+ */
+const route = <T extends string>(path: Route<T>) => path;
 
-export function localizedPath(page: PageKey, locale: Locale): Route {
+export const ROUTES = {
+  home: { sr: route("/sr"), en: route("/en") },
+  about: { sr: route("/sr/o-meni"), en: route("/en/about") },
+  projects: { sr: route("/sr/projekti"), en: route("/en/projects") },
+} as const satisfies Record<PageKey, Record<Locale, string>>;
+
+export type LocalizedPath = (typeof ROUTES)[PageKey][Locale];
+
+export function localizedPath(page: PageKey, locale: Locale): LocalizedPath {
   return ROUTES[page][locale];
 }
 
@@ -31,6 +39,6 @@ export function matchRoute(pathname: string): { page: PageKey; locale: Locale } 
 }
 
 /** Same page in every locale, e.g. for hreflang alternates. */
-export function alternatesFor(page: PageKey): Record<Locale, Route> {
+export function alternatesFor(page: PageKey): Record<Locale, LocalizedPath> {
   return ROUTES[page];
 }

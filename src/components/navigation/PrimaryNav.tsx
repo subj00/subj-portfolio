@@ -1,11 +1,11 @@
 "use client";
 
-import type { Route } from "next";
+import type { LocalizedPath } from "@/i18n/routes";
 import { usePathname } from "next/navigation";
 import { TransitionLink } from "./TransitionLink";
 
 export interface PrimaryNavItem {
-  href: Route;
+  href: LocalizedPath;
   label: string;
 }
 

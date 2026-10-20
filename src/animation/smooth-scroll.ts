@@ -17,7 +17,7 @@ import { gsap, ScrollTrigger } from "./gsap";
 let lenis: Lenis | null = null;
 let teardown: (() => void) | null = null;
 
-export function startSmoothScroll() {
+function startSmoothScroll() {
   if (lenis) return; // one instance, ever
   const instance = new Lenis({ autoRaf: false, anchors: false, syncTouch: false });
   const offScroll = instance.on("scroll", ScrollTrigger.update);
@@ -35,7 +35,7 @@ export function startSmoothScroll() {
   };
 }
 
-export function stopSmoothScroll() {
+function stopSmoothScroll() {
   teardown?.();
   teardown = null;
   lenis = null;
@@ -65,4 +65,22 @@ export function pauseSmoothScroll() {
 export function resumeSmoothScroll() {
   if (pauseCount === 0) return;
   if (--pauseCount === 0) lenis?.start();
+}
+
+let owners = 0;
+
+/**
+ * Requests smooth scrolling; Lenis runs while at least one owner holds it.
+ * Counted because more than one AnimationRuntime can exist at once (Next keeps
+ * the previous locale's app shell mounted but hidden after a language switch),
+ * and their setup/cleanup order must not matter.
+ */
+export function acquireSmoothScroll(): () => void {
+  if (owners++ === 0) startSmoothScroll();
+  let released = false;
+  return () => {
+    if (released) return;
+    released = true;
+    if (--owners === 0) stopSmoothScroll();
+  };
 }

@@ -1,4 +1,5 @@
 import { TransitionLink } from "@/components/navigation/TransitionLink";
+import { site } from "@/content/site";
 import { localizedPath } from "@/i18n/routes";
 import { currentLocale, getDictionary } from "@/i18n/server";
 
@@ -7,6 +8,8 @@ export default async function NotFound() {
   const dict = getDictionary(locale);
   return (
     <main id="main" tabIndex={-1} className="px-4">
+      {/* not-found has no metadata API; React hoists <title> into <head>. */}
+      <title>{`${dict.notFound.title} — ${site.name}`}</title>
       <h1 className="text-2xl">{dict.notFound.title}</h1>
       <p className="mt-2">{dict.notFound.body}</p>
       <p className="mt-4">

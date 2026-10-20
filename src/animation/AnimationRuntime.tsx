@@ -8,7 +8,7 @@ import { motionStore } from "@/stores/motion-store";
 import { endNavigation } from "@/stores/ui-store";
 import { stopScope } from "./director";
 import { MOTION_QUERIES, ScrollTrigger } from "./gsap";
-import { startSmoothScroll, stopSmoothScroll, syncSmoothScroll } from "./smooth-scroll";
+import { acquireSmoothScroll, isSmoothScrollActive, syncSmoothScroll } from "./smooth-scroll";
 
 /** Smooth scrolling only for wheel/trackpad devices without a reduced-motion preference. */
 const SMOOTH_SCROLL_QUERY = `${MOTION_QUERIES.finePointer} and ${MOTION_QUERIES.motion}`;
@@ -30,15 +30,20 @@ export function AnimationRuntime() {
   useEffect(() => endNavigation(), []);
 
   useEffect(() => {
+    let release: (() => void) | null = null;
+    const update = () => motionStore.setState({ smoothScroll: isSmoothScrollActive() });
     const unwatch = watchMedia(SMOOTH_SCROLL_QUERY, (enabled) => {
-      if (enabled) startSmoothScroll();
-      else stopSmoothScroll();
-      motionStore.setState({ smoothScroll: enabled });
+      if (enabled) release ??= acquireSmoothScroll();
+      else {
+        release?.();
+        release = null;
+      }
+      update();
     });
     return () => {
       unwatch();
-      stopSmoothScroll();
-      motionStore.setState({ smoothScroll: false });
+      release?.();
+      update();
     };
   }, []);
 

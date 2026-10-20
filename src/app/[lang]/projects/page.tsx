@@ -17,5 +17,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function Page() {
   const dict = getDictionary(await requireLocale(LOCALE));
-  return <PlaceholderPage title={dict.meta.pages.projects.title} body={dict.placeholder.inProgress} />;
+  return (
+    <PlaceholderPage title={dict.meta.pages.projects.title} body={dict.placeholder.inProgress} />
+  );
 }

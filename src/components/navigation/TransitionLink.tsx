@@ -1,11 +1,8 @@
 "use client";
 
-import Link from "next/link";
+import Link, { type LinkProps } from "next/link";
 import { usePathname } from "next/navigation";
-import type { ComponentProps } from "react";
 import { beginNavigation } from "@/stores/ui-store";
-
-type TransitionLinkProps = ComponentProps<typeof Link>;
 
 /**
  * next/link plus navigation state. It does not animate (yet): it marks a
@@ -18,7 +15,8 @@ type TransitionLinkProps = ComponentProps<typeof Link>;
  *
  * Future phases add leave/enter sequences here via the Director.
  */
-export function TransitionLink({ onNavigate, href, ...props }: TransitionLinkProps) {
+// Generic like next/link itself, so typed routes (including [lang] paths) are checked per call.
+export function TransitionLink<RouteType>({ onNavigate, href, ...props }: LinkProps<RouteType>) {
   const pathname = usePathname();
 
   return (
