@@ -21,6 +21,9 @@ export default function LabLayout({ children }: LayoutProps<"/lab">) {
           <li>
             <Link href="/lab/alt">Lab B</Link>
           </li>
+          <li>
+            <Link href="/lab/scroll">Scroll</Link>
+          </li>
         </ul>
       </nav>
       <p className="mt-4 hidden in-data-[webgl=error]:block in-data-[webgl=unsupported]:block">

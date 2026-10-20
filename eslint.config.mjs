@@ -10,6 +10,13 @@ const WEBGL_IMPORTS = {
     "WebGL code is loaded lazily by the runtime Stage. Declare scenes with <SceneAnchor> instead of importing 3D code here.",
 };
 
+// GSAP plugins and Lenis are registered/owned in src/animation; import them from there.
+const ANIMATION_IMPORTS = {
+  group: ["gsap/*", "@gsap/react", "lenis", "lenis/*"],
+  message:
+    'Import gsap, ScrollTrigger and useGSAP from "@/animation/gsap" (plugins are registered there). Lenis is owned by src/animation/smooth-scroll.',
+};
+
 const eslintConfig = defineConfig([
   ...nextVitals,
   ...nextTs,
@@ -27,6 +34,23 @@ const eslintConfig = defineConfig([
         "error",
         { checksVoidReturn: { attributes: false } },
       ],
+    },
+  },
+
+  // Later blocks replace (not merge) no-restricted-imports, so each lists every pattern it needs.
+  {
+    files: ["src/**"],
+    ignores: ["src/animation/**"],
+    rules: {
+      "no-restricted-imports": ["error", { patterns: [ANIMATION_IMPORTS] }],
+    },
+  },
+
+  // Routes and DOM components stay free of WebGL dependencies.
+  {
+    files: ["src/app/**", "src/components/**"],
+    rules: {
+      "no-restricted-imports": ["error", { patterns: [WEBGL_IMPORTS, ANIMATION_IMPORTS] }],
     },
   },
 
@@ -62,14 +86,6 @@ const eslintConfig = defineConfig([
           ],
         },
       ],
-    },
-  },
-
-  // Routes and DOM components stay free of WebGL dependencies.
-  {
-    files: ["src/app/**", "src/components/**"],
-    rules: {
-      "no-restricted-imports": ["error", { patterns: [WEBGL_IMPORTS] }],
     },
   },
 

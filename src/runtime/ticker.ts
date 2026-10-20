@@ -5,19 +5,23 @@ import { gsap } from "gsap";
  * callback, in phase order, so DOM measurement, scroll and rendering can never
  * drift apart across separate requestAnimationFrame loops.
  *
+ *   scroll  – advance smooth scroll (Lenis), which updates ScrollTrigger
  *   layout  – read DOM geometry that changed (anchor rects)
  *   render  – advance the R3F root (useFrame subscribers, then draw)
  *
- * Phase 2 adds a "scroll" phase before "layout" for Lenis.
+ * GSAP renders its own tweens just before these phases (its root timeline is
+ * the first ticker listener), so values written by tweens and scrubbed
+ * timelines are final by the time "render" draws the frame.
  */
-export type TickPhase = "layout" | "render";
+export type TickPhase = "scroll" | "layout" | "render";
 
 /** time: seconds since the ticker started. deltaMs: milliseconds since last tick. */
 export type TickCallback = (time: number, deltaMs: number) => void;
 
-const PHASES: readonly TickPhase[] = ["layout", "render"];
+const PHASES: readonly TickPhase[] = ["scroll", "layout", "render"];
 
 const callbacks: Record<TickPhase, Set<TickCallback>> = {
+  scroll: new Set(),
   layout: new Set(),
   render: new Set(),
 };

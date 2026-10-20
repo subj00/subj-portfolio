@@ -10,6 +10,7 @@ import {
   Vector3,
 } from "three";
 import { getAnchor } from "@/runtime/scene/anchors";
+import { sceneRigs } from "@/runtime/scene/scene-rigs";
 import { stageStore } from "@/stores/stage-store";
 import { createAnchorFrame, sampleAnchor } from "../../anchor-projection";
 import { useDisposable } from "../../use-disposable";
@@ -23,6 +24,10 @@ import { useDisposable } from "../../use-disposable";
  *   anchor group  – position/scale from the DOM anchor (layout layer)
  *   tilt group    – pointer-driven rotation (input layer)
  *   mesh          – idle spin (ambient layer)
+ *
+ * The sync object adds a "motion" layer between anchor and mesh, driven only
+ * by sceneRigs.lab (written by GSAP in DOM code). Objects whose anchor is not
+ * on the current page are hidden.
  */
 
 const BASE_COLOR = new Color("#8a8a8a");
@@ -37,9 +42,12 @@ export default function LabScene() {
   const mesh = useRef<Mesh>(null);
   const material = useRef<MeshStandardMaterial>(null);
   const markers = useRef<Group>(null);
+  const syncAnchor = useRef<Group>(null);
+  const syncMotion = useRef<Group>(null);
 
   const [targetFrame] = useState(createAnchorFrame);
   const [markerFrame] = useState(createAnchorFrame);
+  const [syncFrame] = useState(createAnchorFrame);
   const interaction = useRef({ hovered: false, detached: false, hover: 0, detach: 0 });
 
   // Shared by all marker cubes: one geometry, one material, released on unmount.
@@ -73,7 +81,8 @@ export default function LabScene() {
     it.detach = MathUtils.damp(it.detach, it.detached ? 1 : 0, lambda, delta);
 
     const group = anchorGroup.current;
-    if (group && sampleAnchor("lab", "target", camera, size, targetFrame)) {
+    if (group) group.visible = sampleAnchor("lab", "target", camera, size, targetFrame);
+    if (group?.visible) {
       // Interpolate between the anchored pose and a free pose (screen center);
       // future timelines drive the same blend instead of the click toggle.
       group.position.lerpVectors(targetFrame.position, ORIGIN, it.detach);
@@ -94,12 +103,28 @@ export default function LabScene() {
     material.current?.color.lerpColors(BASE_COLOR, HOVER_COLOR, it.hover);
 
     const markerGroup = markers.current;
-    if (markerGroup && sampleAnchor("lab", "marker", camera, size, markerFrame)) {
+    if (markerGroup) markerGroup.visible = sampleAnchor("lab", "marker", camera, size, markerFrame);
+    if (markerGroup?.visible) {
       markerGroup.position.copy(markerFrame.position);
       const spanUnits = MARKER_COUNT * MARKER_SPACING;
       markerGroup.scale.setScalar(
         Math.min(markerFrame.height * 0.5, markerFrame.width / spanUnits),
       );
+    }
+
+    // Anchor layer: where the DOM box is. Motion layer: what the timeline says.
+    const sync = syncAnchor.current;
+    if (sync) sync.visible = sampleAnchor("lab", "sync", camera, size, syncFrame);
+    if (sync?.visible) {
+      sync.position.copy(syncFrame.position);
+      sync.scale.setScalar(Math.min(syncFrame.width, syncFrame.height) * 0.3);
+    }
+    const motion = syncMotion.current;
+    if (motion) {
+      const { sync: progress, emphasis } = sceneRigs.lab;
+      motion.rotation.set(progress * Math.PI, progress * Math.PI * 2, 0);
+      motion.position.y = (0.5 - progress) * 1.2; // in anchor-relative units
+      motion.scale.setScalar(1 + 0.35 * emphasis);
     }
   });
 
@@ -114,6 +139,7 @@ export default function LabScene() {
             ref={mesh}
             onPointerOver={(event) => {
               event.stopPropagation();
+              if (!anchorGroup.current?.visible) return;
               interaction.current.hovered = true;
               document.body.style.cursor = "pointer";
               syncDiagnostics();
@@ -125,6 +151,7 @@ export default function LabScene() {
             }}
             onClick={(event) => {
               event.stopPropagation();
+              if (!anchorGroup.current?.visible) return;
               interaction.current.detached = !interaction.current.detached;
               syncDiagnostics();
             }}
@@ -144,6 +171,12 @@ export default function LabScene() {
             position={[(i - (MARKER_COUNT - 1) / 2) * MARKER_SPACING, 0, 0]}
           />
         ))}
+      </group>
+
+      <group ref={syncAnchor}>
+        <group ref={syncMotion}>
+          <mesh geometry={markerGeometry} material={markerMaterial} />
+        </group>
       </group>
     </>
   );

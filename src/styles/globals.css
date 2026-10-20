@@ -1,3 +1,5 @@
 @import "tailwindcss";
+/* Required by Lenis: html height, stopped state, nested-scroll containment. */
+@import "lenis/dist/lenis.css";
 
 /* Design tokens are defined in @theme once visual references arrive. */

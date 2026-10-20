@@ -2,6 +2,7 @@
 
 import dynamic from "next/dynamic";
 import { type ReactNode, useEffect } from "react";
+import { AnimationRuntime } from "@/animation/AnimationRuntime";
 import { detectWebGL2, initialQualityTier, readDeviceProfile, watchMedia } from "@/lib/device";
 import { type StageStatus, setStageStatus, stageStore, useStage } from "@/stores/stage-store";
 
@@ -58,6 +59,7 @@ export function ExperienceRoot({ children }: { children: ReactNode }) {
 
   return (
     <>
+      <AnimationRuntime />
       {/* Content stacks above the fixed canvas. */}
       <div className="relative z-[1]">{children}</div>
       {STAGE_MOUNTED.has(status) && <Stage />}
