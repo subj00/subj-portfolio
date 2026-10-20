@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { ExperienceRoot } from "@/runtime/ExperienceRoot";
 import "@/styles/globals.css";
 
 export const metadata: Metadata = {
@@ -9,7 +10,9 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <ExperienceRoot>{children}</ExperienceRoot>
+      </body>
     </html>
   );
 }

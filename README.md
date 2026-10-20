@@ -33,8 +33,36 @@ GSAP-driven animation layered on top.
   - `src/content`, `src/types`: pure data, import nothing but each other.
   - `src/app`, `src/components`: never import `three`, `@react-three/*` or `@/webgl/*`.
 
-Folders are added in the phase that first needs them (`content/`, `runtime/`, `animation/`,
-`webgl/`, …).
+Folders are added in the phase that first needs them (`content/`, `animation/`, …).
+
+## WebGL stage
+
+| Path                             | Role                                                                  |
+| -------------------------------- | --------------------------------------------------------------------- |
+| `src/runtime/ExperienceRoot.tsx` | Root-layout client boundary; lazy-loads the Stage on first scene use  |
+| `src/runtime/ticker.ts`          | The single frame clock (`gsap.ticker`), phases `layout` → `render`    |
+| `src/runtime/scene/`             | `SceneAnchor`, anchor registry, scene keys (no three.js)              |
+| `src/stores/stage-store.ts`      | Low-frequency Stage state: status, quality tier, scene ref counts     |
+| `src/webgl/Stage.tsx`            | Persistent canvas, render loop, camera projection, context-loss guard |
+| `src/webgl/scenes/registry.ts`   | `SceneKey` → lazily loaded scene component                            |
+| `src/webgl/anchor-projection.ts` | DOM rect → world position/size (`sampleAnchor`)                       |
+
+Using a scene from a page:
+
+```tsx
+// Server component: declares the scene and gives its objects a DOM box to follow.
+<SceneAnchor scene="lab" name="target" className="aspect-square" />
+```
+
+```tsx
+// Inside the scene: sample the anchor each frame, no React state involved.
+useFrame(({ camera, size }) => {
+  if (sampleAnchor("lab", "target", camera, size, frame)) group.position.copy(frame.position);
+});
+```
+
+`/lab` and `/lab/alt` are temporary verification routes (noindex). Delete them with
+`src/webgl/scenes/lab` once real scenes exist.
 
 ## Next.js 16 notes
 
