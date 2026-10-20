@@ -4,6 +4,6 @@
  *
  * This module is import-safe from server and DOM code: it carries no three.js.
  */
-export const SCENE_KEYS = ["lab"] as const;
+export const SCENE_KEYS = ["hero", "lab"] as const;
 
 export type SceneKey = (typeof SCENE_KEYS)[number];

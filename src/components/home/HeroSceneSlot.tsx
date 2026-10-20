@@ -1,21 +1,34 @@
+import { SceneAnchor } from "@/runtime/scene/SceneAnchor";
+
 /**
- * Reserved area for the interactive 3D hero object (Step 3 places a
- * <SceneAnchor scene="hero"> here; the persistent Stage renders behind the DOM).
+ * The hero's 3D area. The persistent Stage renders the "hero" scene behind the
+ * DOM; the SceneAnchor below is the box its sculpture core fills (energy trails
+ * extend beyond it). CSS alone decides the composition per layout:
  *
- * Mobile: the top half of the hero. Wide: the right side, centred where the
- * reference places the object (≈75% across, 50% down).
+ *   wide   – right side, centred ≈ 74% across and 52% down the hero, core
+ *            diameter = 27vw (the reference: 330px of a 1230px frame), capped
+ *            by 62svh on unusually wide screens.
+ *   mobile – large and partly above the content, centred ≈ 55% across and
+ *            30% down the hero, about 78% of the viewport width.
  *
- * Until then it holds only the atmospheric red light from the reference, so the
- * composition reads correctly without a stand-in object. Purely decorative.
+ * The CSS glow stays as the atmosphere (and is the fallback without WebGL).
+ * Purely decorative: aria-hidden, no pointer events.
  */
 export function HeroSceneSlot() {
   return (
     <div
       aria-hidden
       data-hero-scene-slot
-      className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[52%] wide:inset-y-0 wide:right-0 wide:left-[45%] wide:h-auto"
+      className="pointer-events-none absolute inset-0 -z-10 overflow-hidden"
     >
-      <div className="absolute top-[55%] left-[62%] aspect-square w-[min(120vw,46rem)] -translate-1/2 rounded-full bg-[radial-gradient(closest-side,rgb(170_10_20/0.24),rgb(110_0_10/0.10)_45%,transparent)] wide:top-1/2 wide:left-[55%] wide:w-[min(62vw,95vh)]" />
+      {/* CSS glow: the atmosphere without WebGL. The canvas renders BEHIND the DOM, so
+          this would tint the sculpture; it fades out once the Stage is ready. */}
+      <div className="absolute top-[30%] left-[58%] aspect-square w-[min(120vw,46rem)] -translate-1/2 rounded-full bg-[radial-gradient(closest-side,rgb(170_10_20/0.24),rgb(110_0_10/0.10)_45%,transparent)] transition-opacity duration-700 in-data-[webgl=ready]:opacity-0 wide:top-[52%] wide:left-[74%] wide:w-[min(62vw,95vh)]" />
+      <SceneAnchor
+        scene="hero"
+        name="sculpture"
+        className="absolute top-[30%] left-[55%] aspect-square w-[min(78vw,30rem)] -translate-1/2 wide:top-[52%] wide:left-[74%] wide:w-[min(27vw,62svh)]"
+      />
     </div>
   );
 }

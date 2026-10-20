@@ -19,6 +19,19 @@ import type { SceneKey } from "./scene-keys";
 export type Rig = Record<string, number>;
 
 export const sceneRigs = {
+  hero: {
+    /**
+     * Scroll-driven transformation of the sculpture (Step 4+). ScrollTrigger
+     * timelines tween these; the hero scene applies them on its own layer, which
+     * composes with anchor positioning, pointer tilt and ambient motion.
+     */
+    offsetX: 0,
+    offsetY: 0,
+    scale: 1,
+    turn: 0,
+    /** 0 → 1 energy level (trail and crack intensity); 1 at rest. */
+    energy: 1,
+  },
   lab: {
     /** 0→1 scroll progress through the sync demo. */
     sync: 0,

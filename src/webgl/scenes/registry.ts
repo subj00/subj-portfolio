@@ -12,5 +12,6 @@ export interface SceneDefinition {
  * automatically, shared resources go through useDisposable.
  */
 export const sceneRegistry = {
+  hero: { Component: lazy(() => import("./hero/HeroScene")) },
   lab: { Component: lazy(() => import("./lab/LabScene")) },
 } satisfies Record<SceneKey, SceneDefinition>;

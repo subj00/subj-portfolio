@@ -7,8 +7,8 @@ import {
   type FilterFunction,
   useThree,
 } from "@react-three/fiber";
-import { useCallback, useEffect, useLayoutEffect, useState } from "react";
-import { type Object3D, PerspectiveCamera } from "three";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { NeutralToneMapping, type Object3D, PerspectiveCamera, type WebGLRenderer } from "three";
 import type { SceneKey } from "@/runtime/scene/scene-keys";
 import { onTick } from "@/runtime/ticker";
 import { setStageStatus, stageStore, useStage } from "@/stores/stage-store";
@@ -20,6 +20,9 @@ import { StageErrorBoundary } from "./StageErrorBoundary";
 /** After this many context losses in one session, stay on the DOM fallback. */
 const MAX_CONTEXT_LOSSES = 2;
 let contextLosses = 0;
+
+/** Canvases whose context we released on purpose (hidden shell): not a failure. */
+const releasedCanvases = new WeakSet<HTMLCanvasElement>();
 
 function isEffectivelyVisible(object: Object3D) {
   for (let o: Object3D | null = object; o; o = o.parent) if (!o.visible) return false;
@@ -41,7 +44,13 @@ const stageEvents = (store: Parameters<typeof createPointerEvents>[0]) => ({
 /**
  * The persistent WebGL stage: one fixed, full-viewport canvas behind the DOM.
  * Mounted once by ExperienceRoot and kept across navigation. It is remounted
- * (via `key`) only to recover from a lost WebGL context.
+ * (via `key`) only to recover from a lost WebGL context, or when its app shell
+ * becomes visible again after being hidden.
+ *
+ * Hidden shells: after a language switch Next keeps the previous locale's shell
+ * mounted but hidden (cacheComponents / Activity), Stage included. Its effects
+ * clean up on hide, so the WebGL context is released there (GPU memory back)
+ * and a fresh canvas is created if that shell is shown again (Back).
  */
 export default function Stage() {
   const tier = useStage((s) => s.tier);
@@ -52,6 +61,23 @@ export default function Stage() {
   }));
   const [generation, setGeneration] = useState(0);
   const remount = useCallback(() => setGeneration((g) => g + 1), []);
+  const renderer = useRef<WebGLRenderer | null>(null);
+  const released = useRef(false);
+
+  useEffect(() => {
+    if (released.current) {
+      released.current = false;
+      remount();
+    }
+    return () => {
+      const gl = renderer.current;
+      if (!gl) return; // nothing created yet (e.g. Strict Mode's dev re-run)
+      releasedCanvases.add(gl.domElement);
+      gl.forceContextLoss();
+      renderer.current = null;
+      released.current = true;
+    };
+  }, [remount]);
 
   return (
     // lvh: sized to the largest mobile viewport so toolbar show/hide doesn't resize the canvas.
@@ -77,6 +103,10 @@ export default function Stage() {
           eventSource={document.body}
           eventPrefix="client"
           onCreated={(state) => {
+            // Khronos PBR Neutral keeps saturated reds red. ACES (R3F's default)
+            // pushes bright reds toward orange and white.
+            state.gl.toneMapping = NeutralToneMapping;
+            renderer.current = state.gl;
             if (process.env.NODE_ENV !== "production") {
               console.info(`[stage] canvas created (generation ${generation})`);
               // Dev-only handle for inspecting the scene from devtools.
@@ -168,6 +198,7 @@ function ContextLossGuard({ onRestored }: { onRestored: () => void }) {
 
   useEffect(() => {
     const handleLost = (event: Event) => {
+      if (releasedCanvases.has(canvas)) return; // released on purpose, not a failure
       event.preventDefault(); // allows the browser to fire "webglcontextrestored"
       contextLosses += 1;
       console.warn(`[stage] WebGL context lost (${contextLosses})`);
