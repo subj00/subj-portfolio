@@ -1,3 +1,7 @@
+saveExact: true
+
+# Install scripts are blocked unless listed here. Both ship prebuilt binaries,
+# so their postinstall fallbacks are not needed.
 allowBuilds:
   sharp: false
   unrs-resolver: false

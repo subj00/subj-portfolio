@@ -1,36 +1,43 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# subj-portfolio
 
-## Getting Started
+Personal frontend portfolio: a statically rendered Next.js site with a persistent WebGL stage and
+GSAP-driven animation layered on top.
 
-First, run the development server:
+## Requirements
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- Node 24 (see `.node-version`)
+- pnpm via Corepack: `corepack enable pnpm` (the version is pinned in `package.json`)
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Scripts
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+| Script           | Purpose                                            |
+| ---------------- | -------------------------------------------------- |
+| `pnpm dev`       | Dev server (Turbopack)                             |
+| `pnpm build`     | Production build                                   |
+| `pnpm typecheck` | Generate route types, then `tsc --noEmit`          |
+| `pnpm lint`      | ESLint, zero warnings allowed                      |
+| `pnpm format`    | Prettier write (`format:check` to verify)          |
+| `pnpm test`      | Vitest unit tests (`test:watch` for watch mode)    |
+| `pnpm check`     | Everything above, in CI order. Run before pushing. |
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Architecture rules
 
-## Learn More
+- **The DOM is the source of truth.** All content is server-rendered; WebGL is a decorative,
+  lazily loaded enhancement with a DOM fallback.
+- **One clock.** GSAP's ticker drives Lenis, ScrollTrigger and the R3F render loop.
+- **No per-frame React state.** GSAP writes into plain mutable "rig" objects; `useFrame` reads them.
+  Zustand holds low-frequency state only.
+- **One owner per animated property.** Scroll, pointer and idle motion live on separate transform
+  layers.
+- **Import boundaries** (enforced by ESLint):
+  - `src/content`, `src/types`: pure data, import nothing but each other.
+  - `src/app`, `src/components`: never import `three`, `@react-three/*` or `@/webgl/*`.
 
-To learn more about Next.js, take a look at the following resources:
+Folders are added in the phase that first needs them (`content/`, `runtime/`, `animation/`,
+`webgl/`, …).
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Next.js 16 notes
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+`cacheComponents` is on, so up to 3 visited routes stay mounted but hidden (React `<Activity>`).
+Effects clean up when a route is hidden and run again when it is shown. Animation and scene code
+must set up and tear down idempotently in effects, never once at module load.
