@@ -20,6 +20,10 @@ const nextConfig: NextConfig = {
   turbopack: {
     rules: {
       "*.css": {
+        // Tailwind for global stylesheets only. CSS Modules (*.module.css) keep
+        // Next's native handling, which scopes their class names; routing them
+        // through this rule (as: "*.css") would turn them into unscoped globals.
+        condition: { not: { path: /\.module\.css$/ } },
         loaders: ["@tailwindcss/turbopack"],
         as: "*.css",
       },

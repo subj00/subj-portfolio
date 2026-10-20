@@ -7,7 +7,11 @@ export default async function NotFound() {
   const locale = await currentLocale();
   const dict = getDictionary(locale);
   return (
-    <main id="main" tabIndex={-1} className="px-4">
+    <main
+      id="main"
+      tabIndex={-1}
+      className="px-[var(--gutter-l)] pt-[calc(var(--header-h)+env(safe-area-inset-top)+3rem)] outline-none"
+    >
       {/* not-found has no metadata API; React hoists <title> into <head>. */}
       <title>{`${dict.notFound.title} — ${site.name}`}</title>
       <h1 className="text-2xl">{dict.notFound.title}</h1>

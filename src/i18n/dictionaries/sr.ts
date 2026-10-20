@@ -6,7 +6,8 @@ export const sr: Dictionary = {
     pages: {
       home: {
         title: "Početna",
-        description: "Lični portfolio — frontend razvoj i interaktivna web iskustva.",
+        description:
+          "Razvijam savremena web iskustva kroz čist kod, interakciju i promišljen dizajn.",
       },
       about: { title: "O meni", description: "Ko sam, šta radim i kako radim." },
       projects: { title: "Projekti", description: "Izabrani projekti i studije slučaja." },
@@ -16,13 +17,17 @@ export const sr: Dictionary = {
     label: "Glavna navigacija",
     skipToContent: "Preskoči na sadržaj",
     pages: { home: "Početna", about: "O meni", projects: "Projekti" },
+    menuOpen: "Otvori meni",
+    menuClose: "Zatvori meni",
   },
   language: {
     label: "Izbor jezika",
   },
   home: {
-    intro: "", // TODO: kratak uvodni tekst
+    role: "Frontend developer",
+    intro: "Razvijam savremena web iskustva kroz čist kod, interakciju i promišljen dizajn.",
     cta: "Pogledaj projekte",
+    scroll: "Skroluj",
   },
   placeholder: {
     inProgress: "Ova stranica je u izradi.",

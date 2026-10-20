@@ -2,37 +2,50 @@
 
 import type { Route } from "next";
 import { usePathname } from "next/navigation";
-import { useEffect, useId, useRef } from "react";
+import { type ReactNode, useEffect, useId, useRef } from "react";
 import { lockScroll } from "@/animation/scroll-lock";
+import type { LocalizedPath } from "@/i18n/routes";
+import { watchMedia } from "@/lib/device";
 import { setMenuOpen, useUi } from "@/stores/ui-store";
 import { TransitionLink } from "./TransitionLink";
 
 export interface NavItem {
-  href: Route;
+  href: LocalizedPath | Route;
   label: string;
 }
 
 /**
- * Disclosure-pattern menu: a real <button> with aria-expanded/aria-controls
- * and a list of links. Unstyled; visual design comes later.
+ * Mobile menu: a real <button> (disclosure pattern: aria-expanded,
+ * aria-controls) that opens a full-screen panel of links.
  *
  * Open state lives in ui-store so other parts (scene dimming, transitions) can
- * react to it. While open, background scrolling is locked (released on close,
- * navigation and unmount). Closes on Escape (focus returns to the toggle), on a
- * pointer press outside, and on navigation.
+ * react to it. While open: background scrolling is locked, and the page behind
+ * the panel is inert so Tab stays in the menu. Closes on Escape (focus returns
+ * to the toggle), a press outside, navigation, unmount, and when the viewport
+ * reaches `closeWhen` (the layout that no longer shows this menu).
  */
 export function NavMenu({
   items,
-  label = "Menu",
+  openLabel = "Open menu",
+  closeLabel = "Close menu",
+  closeWhen,
+  footer,
   lockBackgroundScroll = true,
+  className,
 }: {
   items: NavItem[];
-  label?: string;
+  openLabel?: string;
+  closeLabel?: string;
+  /** Media query at which the menu is not used (e.g. the wide layout). */
+  closeWhen?: string;
+  /** Extra panel content below the links (e.g. the language switcher). */
+  footer?: ReactNode;
   lockBackgroundScroll?: boolean;
+  className?: string;
 }) {
   const open = useUi((s) => s.menuOpen);
   const pathname = usePathname();
-  const listId = useId();
+  const panelId = useId();
   const root = useRef<HTMLDivElement>(null);
   const toggle = useRef<HTMLButtonElement>(null);
 
@@ -60,34 +73,76 @@ export function NavMenu({
     [open, lockBackgroundScroll],
   );
 
+  // Content behind the full-screen panel is unreachable while it is open.
+  useEffect(() => {
+    if (!open) return;
+    const mains = [...document.querySelectorAll("main")];
+    for (const main of mains) main.inert = true;
+    return () => {
+      for (const main of mains) main.inert = false;
+    };
+  }, [open]);
+
+  useEffect(() => {
+    if (!closeWhen) return;
+    return watchMedia(closeWhen, (matches) => {
+      if (matches) setMenuOpen(false);
+    });
+  }, [closeWhen]);
+
   // The menu never survives the component (e.g. a cached route being hidden).
   useEffect(() => () => setMenuOpen(false), []);
 
   return (
-    <div ref={root} data-nav-menu>
+    <div ref={root} data-nav-menu className={className}>
       <button
         ref={toggle}
         type="button"
         aria-expanded={open}
-        aria-controls={listId}
+        aria-controls={panelId}
+        aria-label={open ? closeLabel : openLabel}
         onClick={() => setMenuOpen(!open)}
-        className="min-h-11 border px-3"
+        className="group relative z-10 -mr-2.5 grid size-11 place-items-center"
       >
-        {label}
+        {/* Three hairlines; the outer two cross into an × when open. */}
+        <span aria-hidden className="relative block h-3 w-[1.875rem]">
+          {[
+            "top-0 group-aria-expanded:top-1.5 group-aria-expanded:rotate-45",
+            "top-1.5 group-aria-expanded:opacity-0",
+            "top-3 group-aria-expanded:top-1.5 group-aria-expanded:-rotate-45",
+          ].map((position) => (
+            <span
+              key={position}
+              className={`absolute left-0 h-px w-full bg-paper transition-[top,transform,opacity] duration-300 motion-reduce:transition-none ${position}`}
+            />
+          ))}
+        </span>
       </button>
-      <ul id={listId} hidden={!open} className="mt-2 grid gap-1">
-        {items.map((item) => (
-          <li key={item.href}>
-            <TransitionLink
-              href={item.href}
-              aria-current={item.href === pathname ? "page" : undefined}
-              className="inline-flex min-h-11 items-center underline aria-[current=page]:font-bold"
-            >
-              {item.label}
-            </TransitionLink>
-          </li>
-        ))}
-      </ul>
+
+      <div
+        id={panelId}
+        hidden={!open}
+        className="fixed inset-0 flex flex-col justify-between overflow-y-auto bg-ink pt-[calc(var(--header-h)+env(safe-area-inset-top)+2rem)] pr-[var(--gutter-r)] pb-[calc(2rem+env(safe-area-inset-bottom))] pl-[var(--gutter-l)]"
+      >
+        <ul className="grid gap-2">
+          {items.map((item) => (
+            <li key={item.href}>
+              <TransitionLink
+                href={item.href}
+                aria-current={item.href === pathname ? "page" : undefined}
+                className="group/link inline-flex min-h-14 items-center gap-4 text-[clamp(1.375rem,7vw,2rem)] font-light tracking-[0.18em] text-mist uppercase transition-colors hover:text-paper aria-[current=page]:text-paper"
+              >
+                <span
+                  aria-hidden
+                  className="size-1.5 rounded-full bg-accent-bright opacity-0 group-aria-[current=page]/link:opacity-100"
+                />
+                {item.label}
+              </TransitionLink>
+            </li>
+          ))}
+        </ul>
+        {footer}
+      </div>
     </div>
   );
 }

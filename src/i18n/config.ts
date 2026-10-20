@@ -28,3 +28,9 @@ export const LOCALE_NAMES: Record<Locale, string> = {
   sr: "Srpski",
   en: "English",
 };
+
+/** Compact labels for the desktop switcher (the endonym stays the accessible name). */
+export const LOCALE_SHORT: Record<Locale, string> = {
+  sr: "SR",
+  en: "EN",
+};

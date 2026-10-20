@@ -1,34 +1,50 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { HTML_LANG, type Locale, LOCALE_NAMES, LOCALES } from "@/i18n/config";
+import { HTML_LANG, type Locale, LOCALE_NAMES, LOCALE_SHORT, LOCALES } from "@/i18n/config";
 import { localizedPath, matchRoute } from "@/i18n/routes";
 import { TransitionLink } from "./TransitionLink";
 
 /**
  * Links to the current page in every language (e.g. /sr/o-meni ⇄ /en/about).
- * Each option is labelled in its own language with matching lang/hreflang, so
- * screen readers pronounce it correctly.
+ * Each option's accessible name is its endonym in its own language (lang and
+ * hreflang set), so screen readers pronounce it correctly.
+ *
+ *   compact – "SR  EN" for the desktop header
+ *   full    – "Srpski  English" for the mobile menu
  *
  * Switching language changes the root layout's [lang] segment, which remounts
- * the app shell (including the WebGL stage) for the new locale.
+ * the app shell for the new locale.
  */
-export function LanguageSwitcher({ label, current }: { label: string; current: Locale }) {
+export function LanguageSwitcher({
+  label,
+  current,
+  variant = "compact",
+  className,
+}: {
+  label: string;
+  current: Locale;
+  variant?: "compact" | "full";
+  className?: string;
+}) {
   const page = matchRoute(usePathname())?.page ?? "home";
 
   return (
-    <nav aria-label={label}>
-      <ul className="flex gap-3">
+    <nav aria-label={label} className={className}>
+      <ul className={variant === "compact" ? "flex items-center gap-4" : "flex items-center gap-8"}>
         {LOCALES.map((locale) => (
           <li key={locale}>
             <TransitionLink
               href={localizedPath(page, locale)}
               lang={HTML_LANG[locale]}
               hrefLang={HTML_LANG[locale]}
+              aria-label={variant === "compact" ? LOCALE_NAMES[locale] : undefined}
               aria-current={locale === current ? "true" : undefined}
-              className="inline-flex min-h-11 items-center underline-offset-4 aria-[current=true]:underline"
+              className={`inline-flex min-h-11 min-w-6 items-center justify-center tracking-[0.22em] text-mist uppercase transition-colors hover:text-paper aria-[current=true]:text-paper ${
+                variant === "compact" ? "text-[clamp(0.6875rem,0.77vw,0.8125rem)]" : "text-xs"
+              }`}
             >
-              {LOCALE_NAMES[locale]}
+              {variant === "compact" ? LOCALE_SHORT[locale] : LOCALE_NAMES[locale]}
             </TransitionLink>
           </li>
         ))}

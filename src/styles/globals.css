@@ -2,4 +2,59 @@
 /* Required by Lenis: html height, stopped state, nested-scroll containment. */
 @import "lenis/dist/lenis.css";
 
-/* Design tokens are defined in @theme once visual references arrive. */
+/*
+ * "wide" = the desktop composition: at least 48rem wide AND landscape.
+ * Phones and portrait tablets get the mobile composition (hamburger, stacked hero).
+ * Header and hero switch together so their gutters always align.
+ */
+@custom-variant wide (@media (width >= 48rem) and (orientation: landscape));
+
+/* static: emit every token even if no utility uses it (body styles reference them via var()). */
+@theme static {
+  --color-ink: #050505;
+  --color-paper: #f2f2f2;
+  --color-soft: #c4c4c4; /* body copy on black */
+  --color-mist: #8c8c8c; /* labels, inactive nav */
+  --color-line: rgb(255 255 255 / 0.16);
+  --color-accent: #e3121b;
+  --color-accent-bright: #ff2a33;
+
+  --font-sans: var(--font-jost), ui-sans-serif, system-ui, sans-serif;
+}
+
+:root {
+  /* Page gutters and header height, shared by the header and every section. */
+  --gutter-l: clamp(1.5rem, 9vw, 3rem);
+  --gutter-r: var(--gutter-l);
+  --header-h: 5rem;
+
+  color-scheme: dark;
+  background: var(--color-ink);
+  color: var(--color-paper);
+}
+
+@media (width >= 48rem) and (orientation: landscape) {
+  :root {
+    /* Measured from the reference: 5% left, 3% right (right-edge controls). */
+    --gutter-l: 5vw;
+    --gutter-r: 3vw;
+    --header-h: clamp(4.5rem, 6vw, 6rem);
+  }
+}
+
+body {
+  background: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::selection {
+  background: var(--color-accent);
+  color: #fff;
+}
+
+:focus-visible {
+  outline: 1px solid var(--color-accent-bright);
+  outline-offset: 4px;
+}

@@ -1,10 +1,17 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { RootDocument } from "@/components/layout/RootDocument";
 import { SiteHeader } from "@/components/layout/SiteHeader";
 import { SkipLink } from "@/components/layout/SkipLink";
 import { HTML_LANG, LOCALES } from "@/i18n/config";
 import { localeMetadata } from "@/i18n/metadata";
 import { currentLocale, getDictionary } from "@/i18n/server";
+
+/** viewport-fit=cover makes env(safe-area-inset-*) available on notched devices. */
+export const viewport: Viewport = {
+  viewportFit: "cover",
+  themeColor: "#050505",
+  colorScheme: "dark",
+};
 
 /** Both locales are prerendered; anything else in this segment 404s at the page. */
 export function generateStaticParams() {

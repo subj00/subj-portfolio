@@ -1,0 +1,127 @@
+/*
+ * Home hero composition. Two intentional layouts, switched by the same "wide"
+ * condition as the header (≥ 48rem and landscape):
+ *
+ *   mobile – 3D area fills the top half; label, name, intro and CTA sit in the
+ *            lower half; scroll indicator centred at the bottom.
+ *   wide   – content column on the left, 3D area on the right half, vertical
+ *            scroll indicator at the right edge.
+ *
+ * Wide values are measured from the reference frame (1230px wide) and expressed
+ * in vw so the composition keeps its proportions across desktop widths:
+ *   left gutter 62px = 5vw, content indent 26px = 2.1vw,
+ *   label → name 55px = 4.5vw, name → intro 25px = 2vw, intro → CTA 28px = 2.3vw,
+ *   name lettering 592px = 48vw.
+ */
+
+.hero {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  min-height: 100svh;
+  padding: calc(var(--header-h) + env(safe-area-inset-top)) var(--gutter-r)
+    calc(max(6.5rem, 15svh) + env(safe-area-inset-bottom)) var(--gutter-l);
+  overflow: clip;
+}
+
+.content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+/* "01 —— FRONTEND DEVELOPER" (index and rule only in the wide layout) */
+.eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  font-size: clamp(0.625rem, 2.6vw, 0.75rem);
+  font-weight: 400;
+  letter-spacing: 0.42em;
+  text-transform: uppercase;
+  color: var(--color-mist);
+}
+
+.index {
+  display: none;
+  letter-spacing: 0.1em;
+  color: var(--color-soft);
+}
+
+.rule {
+  display: none;
+  width: 5.1vw;
+  height: 1px;
+  background: var(--color-line);
+}
+
+/* Sized to the lettering; DisplayName trims the PNG's transparent padding. */
+.name {
+  width: 100%;
+  max-width: 34rem;
+  margin-top: clamp(1.25rem, 7vw, 2rem); /* reference: label → lettering ≈ 28px at 375 */
+}
+
+.intro {
+  max-width: 22em;
+  margin-top: clamp(1rem, 4.5vw, 1.5rem);
+  font-size: clamp(0.9375rem, 4vw, 1.0625rem);
+  font-weight: 300;
+  line-height: 1.55;
+  color: var(--color-soft);
+}
+
+.cta {
+  margin-top: clamp(1.75rem, 8vw, 2.75rem);
+}
+
+@media (width >= 48rem) and (orientation: landscape) {
+  .hero {
+    justify-content: center;
+    /* Centre the block between the header and the bottom edge, as in the reference. */
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .eyebrow {
+    gap: 0;
+    font-size: clamp(0.625rem, 0.75vw, 0.8125rem);
+  }
+
+  .index,
+  .rule {
+    display: block;
+  }
+
+  .index {
+    margin-right: 1.6vw;
+  }
+
+  .rule {
+    margin-right: 2vw;
+  }
+
+  .name,
+  .intro,
+  .cta {
+    margin-left: 2.1vw;
+  }
+
+  .name {
+    width: min(48vw, 74rem);
+    max-width: none;
+    margin-top: 4.5vw;
+  }
+
+  .intro {
+    margin-top: 1.6vw; /* 2vw visual gap minus the line-height half-leading */
+    font-size: clamp(0.9375rem, 1.18vw, 1.375rem);
+  }
+
+  .cta {
+    margin-top: 2.3vw;
+  }
+}

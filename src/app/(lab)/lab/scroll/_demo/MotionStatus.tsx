@@ -12,7 +12,7 @@ export function MotionStatus() {
   return (
     <dl
       data-motion-status
-      className="fixed right-4 bottom-4 z-10 grid grid-cols-[auto_auto] gap-x-3 border bg-white px-3 py-2 text-sm"
+      className="fixed right-4 bottom-4 z-10 grid grid-cols-[auto_auto] gap-x-3 border bg-ink px-3 py-2 text-sm"
     >
       <dt>Active section</dt>
       <dd data-active-section>{activeSection ?? "none"}</dd>

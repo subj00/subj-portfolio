@@ -15,15 +15,21 @@ export interface Dictionary {
     label: string;
     skipToContent: string;
     pages: Record<PageKey, string>;
+    menuOpen: string;
+    menuClose: string;
   };
   language: {
     /** Accessible name of the language switcher. */
     label: string;
   };
   home: {
-    /** Short introduction under the name. Empty until the copy is written. */
+    /** Small uppercase label above the name. */
+    role: string;
+    /** Short introduction under the name. */
     intro: string;
     cta: string;
+    /** Visible text of the scroll indicator. */
+    scroll: string;
   };
   placeholder: {
     inProgress: string;
