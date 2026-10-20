@@ -1,7 +1,7 @@
 import type { ThreeEvent } from "@react-three/fiber";
 import { useEffect, useRef, useState } from "react";
 import { exceedsSlop, TAP_SLOP_PX } from "@/interaction/gesture";
-import { interactionsLocked } from "@/stores/ui-store";
+import { interactionsLocked, selectInteractionsLocked, uiStore } from "@/stores/ui-store";
 
 /**
  * Interaction for one R3F object, built on R3F's own raycasting and events
@@ -71,7 +71,7 @@ export function useObjectInteraction(options: ObjectInteractionOptions) {
   const ownsCursor = useRef(false);
 
   // Created once; handlers read the latest options through refs at event time.
-  const [handlers] = useState<ObjectInteractionHandlers>(() => {
+  const [api] = useState(() => {
     const allowed = () => !interactionsLocked() && (latest.current.enabled?.() ?? true);
 
     const setHovered = (hovered: boolean) => {
@@ -94,7 +94,13 @@ export function useObjectInteraction(options: ObjectInteractionOptions) {
       p.target = null;
     };
 
-    return {
+    /** Drops hover and cancels any press/drag (lock started, unmount). */
+    const reset = () => {
+      setHovered(false);
+      endPress(true);
+    };
+
+    const handlers: ObjectInteractionHandlers = {
       onPointerOver(event) {
         event.stopPropagation();
         if (event.pointerType === "touch" || !allowed()) return;
@@ -111,20 +117,21 @@ export function useObjectInteraction(options: ObjectInteractionOptions) {
         p.x = event.clientX;
         p.y = event.clientY;
         state.current.pressed = true;
-        if (latest.current.drag) {
-          p.target = event.target as unknown as CaptureTarget;
-          p.target.setPointerCapture(event.pointerId);
-        }
       },
       onPointerMove(event) {
         const s = state.current;
         const p = press.current;
         if (!s.pressed || event.pointerId !== p.pointerId || !latest.current.drag) return;
-        if (!allowed()) return endPress(true);
+        // Released outside the object before a drag began: we never saw pointerup.
+        if (event.buttons === 0 || !allowed()) return endPress(true);
         const dx = event.clientX - p.x;
         const dy = event.clientY - p.y;
         if (!s.dragging && exceedsSlop(dx, dy)) {
           s.dragging = true;
+          // Capture only once it is a drag, so a plain tap keeps its normal click
+          // target (links/buttons inside the anchor element keep working).
+          p.target = event.target as unknown as CaptureTarget;
+          p.target.setPointerCapture(event.pointerId);
           latest.current.drag.onStart?.();
         }
         if (s.dragging) latest.current.drag.onMove?.(dx, dy);
@@ -141,18 +148,22 @@ export function useObjectInteraction(options: ObjectInteractionOptions) {
         latest.current.onActivate?.();
       },
     };
+
+    return { handlers, reset };
   });
 
-  // Unmount: never leave a pointer cursor or a captured pointer behind.
+  // A lock (navigation, transition) takes effect immediately, not on the next
+  // pointer event: no lingering hover/cursor, no drag continuing underneath.
   useEffect(
-    () => () => {
-      const p = press.current;
-      if (p.target?.hasPointerCapture(p.pointerId)) p.target.releasePointerCapture(p.pointerId);
-      if (ownsCursor.current) document.body.style.cursor = "";
-      ownsCursor.current = false;
-    },
-    [],
+    () =>
+      uiStore.subscribe((s, prev) => {
+        if (selectInteractionsLocked(s) && !selectInteractionsLocked(prev)) api.reset();
+      }),
+    [api],
   );
 
-  return { state, handlers };
+  // Unmount: never leave a pointer cursor or a captured pointer behind.
+  useEffect(() => api.reset, [api]);
+
+  return { state, handlers: api.handlers };
 }

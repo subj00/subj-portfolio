@@ -1,9 +1,14 @@
 "use client";
 
 import { PerformanceMonitor } from "@react-three/drei";
-import { Canvas, useThree } from "@react-three/fiber";
+import {
+  Canvas,
+  events as createPointerEvents,
+  type FilterFunction,
+  useThree,
+} from "@react-three/fiber";
 import { useCallback, useEffect, useLayoutEffect, useState } from "react";
-import { PerspectiveCamera } from "three";
+import { type Object3D, PerspectiveCamera } from "three";
 import type { SceneKey } from "@/runtime/scene/scene-keys";
 import { onTick } from "@/runtime/ticker";
 import { setStageStatus, stageStore, useStage } from "@/stores/stage-store";
@@ -15,6 +20,23 @@ import { StageErrorBoundary } from "./StageErrorBoundary";
 /** After this many context losses in one session, stay on the DOM fallback. */
 const MAX_CONTEXT_LOSSES = 2;
 let contextLosses = 0;
+
+function isEffectivelyVisible(object: Object3D) {
+  for (let o: Object3D | null = object; o; o = o.parent) if (!o.visible) return false;
+  return true;
+}
+
+/**
+ * R3F's pointer events, minus hits on hidden objects. three.js raycasting ignores
+ * `visible`, so without this an object hidden because its anchor is absent (or
+ * its scene is off-screen) would still intercept and stop events meant for
+ * visible objects behind it.
+ */
+const stageEvents = (store: Parameters<typeof createPointerEvents>[0]) => ({
+  ...createPointerEvents(store),
+  filter: ((hits) =>
+    hits.filter((hit) => isEffectivelyVisible(hit.object))) satisfies FilterFunction,
+});
 
 /**
  * The persistent WebGL stage: one fixed, full-viewport canvas behind the DOM.
@@ -51,6 +73,7 @@ export default function Stage() {
             powerPreference: "high-performance",
           }}
           camera={{ fov: creation.fov, near: 0.1, far: 100, position: [...CAMERA_START_POSITION] }}
+          events={stageEvents}
           eventSource={document.body}
           eventPrefix="client"
           onCreated={(state) => {

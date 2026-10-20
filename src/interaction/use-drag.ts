@@ -88,7 +88,6 @@ export function useDrag(ref: RefObject<HTMLElement | null>, options: DragOptions
       startTime = lastTime = event.timeStamp;
       Object.assign(info, { dx: 0, dy: 0, vx: 0, vy: 0, pointerType: event.pointerType });
       suppressClick = false;
-      element.setPointerCapture(event.pointerId);
     };
 
     const onMove = (event: PointerEvent) => {
@@ -104,6 +103,9 @@ export function useDrag(ref: RefObject<HTMLElement | null>, options: DragOptions
 
       if (!dragging && exceedsSlop(info.dx, info.dy)) {
         dragging = true;
+        // Capture only once it is a drag: capturing on pointerdown would retarget
+        // the click of a plain tap to this element, breaking buttons/links inside it.
+        element.setPointerCapture(event.pointerId);
         latest.current.onStart?.(info);
       }
       if (dragging) latest.current.onMove?.(info);

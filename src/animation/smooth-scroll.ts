@@ -25,6 +25,7 @@ export function startSmoothScroll() {
   // Lenis owns frame pacing; GSAP's lag smoothing would desync scrubbed timelines.
   gsap.ticker.lagSmoothing(0);
 
+  if (pauseCount > 0) instance.stop(); // started while a scroll lock is held
   lenis = instance;
   teardown = () => {
     offScroll();
@@ -52,4 +53,16 @@ export function syncSmoothScroll() {
   if (!lenis) return;
   lenis.resize();
   lenis.scrollTo(window.scrollY, { immediate: true, force: true });
+}
+
+let pauseCount = 0;
+
+/** Stops Lenis from reacting to input (e.g. while a menu locks page scroll). Counted. */
+export function pauseSmoothScroll() {
+  if (pauseCount++ === 0) lenis?.stop();
+}
+
+export function resumeSmoothScroll() {
+  if (pauseCount === 0) return;
+  if (--pauseCount === 0) lenis?.start();
 }

@@ -3,6 +3,7 @@
 import type { Route } from "next";
 import { usePathname } from "next/navigation";
 import { useEffect, useId, useRef } from "react";
+import { lockScroll } from "@/animation/scroll-lock";
 import { setMenuOpen, useUi } from "@/stores/ui-store";
 import { TransitionLink } from "./TransitionLink";
 
@@ -15,11 +16,20 @@ export interface NavItem {
  * Disclosure-pattern menu: a real <button> with aria-expanded/aria-controls
  * and a list of links. Unstyled; visual design comes later.
  *
- * Open state lives in ui-store so other parts (scene dimming, scroll lock) can
- * react to it later. Closes on Escape (focus returns to the toggle), on a
+ * Open state lives in ui-store so other parts (scene dimming, transitions) can
+ * react to it. While open, background scrolling is locked (released on close,
+ * navigation and unmount). Closes on Escape (focus returns to the toggle), on a
  * pointer press outside, and on navigation.
  */
-export function NavMenu({ items, label = "Menu" }: { items: NavItem[]; label?: string }) {
+export function NavMenu({
+  items,
+  label = "Menu",
+  lockBackgroundScroll = true,
+}: {
+  items: NavItem[];
+  label?: string;
+  lockBackgroundScroll?: boolean;
+}) {
   const open = useUi((s) => s.menuOpen);
   const pathname = usePathname();
   const listId = useId();
@@ -44,6 +54,11 @@ export function NavMenu({ items, label = "Menu" }: { items: NavItem[]; label?: s
       document.removeEventListener("pointerdown", onPointerDown);
     };
   }, [open]);
+
+  useEffect(
+    () => (open && lockBackgroundScroll ? lockScroll() : undefined),
+    [open, lockBackgroundScroll],
+  );
 
   // The menu never survives the component (e.g. a cached route being hidden).
   useEffect(() => () => setMenuOpen(false), []);

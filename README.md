@@ -69,6 +69,7 @@ useFrame(({ camera, size }) => {
 | `src/animation/smooth-scroll.ts`                  | Single Lenis instance on the shared ticker                    |
 | `src/animation/AnimationRuntime.tsx`              | Lenis lifecycle, ScrollTrigger refresh, route-change handling |
 | `src/animation/director.ts`                       | Exclusive channels for cross-component sequences              |
+| `src/animation/scroll-lock.ts`                    | Counted background scroll lock (menu, dialogs); pauses Lenis  |
 | `src/runtime/scene/scene-rigs.ts`                 | Plain-number rigs: GSAP writes, scenes read in `useFrame`     |
 | `src/interaction/`                                | Gesture math, `usePointerTracker`, `useDrag` (DOM)            |
 | `src/webgl/interaction/use-object-interaction.ts` | Hover/tap/drag for R3F objects on R3F's own raycasting        |

@@ -4,7 +4,18 @@ import dynamic from "next/dynamic";
 import { type ReactNode, useEffect } from "react";
 import { AnimationRuntime } from "@/animation/AnimationRuntime";
 import { detectWebGL2, initialQualityTier, readDeviceProfile, watchMedia } from "@/lib/device";
+import { motionStore } from "@/stores/motion-store";
 import { type StageStatus, setStageStatus, stageStore, useStage } from "@/stores/stage-store";
+import { uiStore } from "@/stores/ui-store";
+
+if (process.env.NODE_ENV !== "production" && typeof window !== "undefined") {
+  // Dev-only handle for inspecting shared state from devtools.
+  (window as Window & { __stores?: unknown }).__stores = {
+    stage: stageStore,
+    motion: motionStore,
+    ui: uiStore,
+  };
+}
 
 // The only route into the WebGL chunk (three, R3F, drei, scenes).
 const Stage = dynamic(() => import("@/webgl/Stage"), { ssr: false });
