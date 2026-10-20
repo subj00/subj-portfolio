@@ -44,7 +44,14 @@ export function SiteHeader({ locale, dict }: { locale: Locale; dict: Dictionary 
         closeLabel={dict.nav.menuClose}
         closeWhen={WIDE_QUERY}
         className="justify-self-end wide:hidden"
-        footer={<LanguageSwitcher label={dict.language.label} current={locale} variant="full" />}
+        footer={
+          <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-2">
+            <p className="text-[0.6875rem] tracking-[0.32em] text-mist uppercase">
+              {dict.home.role}
+            </p>
+            <LanguageSwitcher label={dict.language.label} current={locale} variant="full" />
+          </div>
+        }
       >
         <SectionNav
           locale={locale}
