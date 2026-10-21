@@ -1,5 +1,6 @@
 import { AboutSection } from "@/components/home/AboutSection";
 import { ContactSection } from "@/components/home/ContactSection";
+import { FinalOrbit } from "@/components/home/FinalOrbit";
 import { HeroSection } from "@/components/home/HeroSection";
 import { ProjectsSection } from "@/components/home/ProjectsSection";
 import { RedFracture } from "@/components/home/RedFracture";
@@ -14,7 +15,7 @@ import type { Dictionary } from "@/i18n/dictionaries/types";
  */
 export function HomePage({ locale, dict }: { locale: Locale; dict: Dictionary }) {
   return (
-    // relative: the About → Projects energy overlay (RedFracture) is positioned in it.
+    // relative: the energy overlays (RedFracture, FinalOrbit) are positioned in it.
     <main id="main" tabIndex={-1} className="relative outline-none">
       <HeroSection locale={locale} dict={dict} />
       <AboutSection locale={locale} dict={dict} />
@@ -24,6 +25,8 @@ export function HomePage({ locale, dict }: { locale: Locale; dict: Dictionary })
       {/* About → Projects transition and its energy overlay (client). */}
       <RedFracture />
       <ContactSection locale={locale} dict={dict} />
+      {/* Projects → Contact transition and its energy overlay (client). */}
+      <FinalOrbit />
     </main>
   );
 }

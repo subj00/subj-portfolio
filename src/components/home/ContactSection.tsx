@@ -20,8 +20,8 @@ import styles from "./ContactSection.module.css";
  * informational only (no arrow, not focusable). Content:
  * src/content/contact.ts + dictionaries.
  *
- * data-contact / data-orbit mark what a later Projects → Contact transition
- * will animate (no CSS transforms on them).
+ * data-contact / data-orbit mark what the Projects → Contact transition
+ * (FinalOrbit) animates (no CSS transforms on them).
  */
 export function ContactSection({ locale, dict }: { locale: Locale; dict: Dictionary }) {
   const t = dict.contact;
@@ -35,15 +35,20 @@ export function ContactSection({ locale, dict }: { locale: Locale; dict: Diction
       <Orbits />
 
       <div data-contact="content" className={styles.content}>
-        <p aria-hidden className={styles.index}>
+        <p aria-hidden data-contact="part" className={styles.index}>
           04
           <span className={styles.rule} />
           {dict.nav.sections.contact}
         </p>
         <h2 id="contact-title" className={styles.title}>
-          <span>{t.title[0]}</span> <span className={styles.accent}>{t.title[1]}</span>
+          <span data-contact="title-line">{t.title[0]}</span>{" "}
+          <span data-contact="title-line" className={styles.accent}>
+            {t.title[1]}
+          </span>
         </h2>
-        <p className={styles.intro}>{t.intro}</p>
+        <p data-contact="part" className={styles.intro}>
+          {t.intro}
+        </p>
 
         <ul className={styles.grid}>
           <ContactItem

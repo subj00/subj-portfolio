@@ -8,6 +8,7 @@ import {
   ScrollTrigger,
   useGSAP,
 } from "@/animation/gsap";
+import { layoutBox as box, type LayoutBox as Box } from "@/animation/layout-box";
 import { resettleOnRefresh } from "@/animation/scrubbed";
 
 /**
@@ -231,24 +232,6 @@ export function RedFracture() {
       ))}
     </svg>
   );
-}
-
-interface Box {
-  x: number;
-  y: number;
-  w: number;
-  h: number;
-}
-
-/** Document-space layout box from offsets: ignores CSS transforms (incl. ours). */
-function box(element: HTMLElement): Box {
-  let x = 0;
-  let y = 0;
-  for (let e: HTMLElement | null = element; e; e = e.offsetParent as HTMLElement | null) {
-    x += e.offsetLeft;
-    y += e.offsetTop;
-  }
-  return { x, y, w: element.offsetWidth, h: element.offsetHeight };
 }
 
 /** x of the About timeline's red rail (centre of a row's dot), overlay coordinates. */

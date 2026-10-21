@@ -17,6 +17,8 @@ import styles from "./ProjectsSection.module.css";
  * data-projects marks what the About → Projects transition (RedFracture)
  * animates; the CSS keeps transforms off them so GSAP owns them cleanly. The
  * transition only fades the panels (never their borders), so hover still works.
+ * data-final marks the parents the Projects → Contact transition (FinalOrbit)
+ * lets recede.
  */
 export function ProjectsSection({ locale, dict }: { locale: Locale; dict: Dictionary }) {
   return (
@@ -26,7 +28,7 @@ export function ProjectsSection({ locale, dict }: { locale: Locale; dict: Dictio
       labelledBy="projects-title"
       className={styles.projects}
     >
-      <header data-projects="heading" className={styles.heading}>
+      <header data-projects="heading" data-final="projects" className={styles.heading}>
         <div>
           <p aria-hidden data-projects="heading-part" className={styles.index}>
             03
@@ -42,7 +44,7 @@ export function ProjectsSection({ locale, dict }: { locale: Locale; dict: Dictio
         </p>
       </header>
 
-      <ol className={styles.list}>
+      <ol data-final="projects" className={styles.list}>
         {projects.map((project, index) => (
           <ProjectEntry key={project.id} project={project} index={index} dict={dict} />
         ))}
