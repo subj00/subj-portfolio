@@ -1,5 +1,4 @@
 import Image, { type StaticImageData } from "next/image";
-import type { ReactNode } from "react";
 import { PortfolioSection } from "@/components/layout/PortfolioSection";
 import { contact } from "@/content/contact";
 import type { Locale } from "@/i18n/config";
@@ -50,14 +49,15 @@ export function ContactSection({ locale, dict }: { locale: Locale; dict: Diction
           <ContactItem
             icon={mailIcon}
             label={t.email.label}
-            // Narrow phones: prefer to break before the @.
-            value={emailParts(contact.email)}
+            value={contact.email}
+            short={t.email.short}
             href={`mailto:${contact.email}`}
           />
           <ContactItem
             icon={linkedinIcon}
             label={t.linkedin.label}
             value={t.linkedin.text}
+            short={t.linkedin.short}
             href={contact.linkedin}
             external={t.external}
           />
@@ -88,21 +88,11 @@ export function ContactSection({ locale, dict }: { locale: Locale; dict: Diction
   );
 }
 
-function emailParts(email: string) {
-  const at = email.indexOf("@");
-  return (
-    <>
-      {email.slice(0, at)}
-      <wbr />
-      {email.slice(at)}
-    </>
-  );
-}
-
 function ContactItem({
   icon,
   label,
   value,
+  short,
   href,
   external,
   ringed = false,
@@ -110,7 +100,9 @@ function ContactItem({
 }: {
   icon: StaticImageData;
   label: string;
-  value: ReactNode;
+  value: string;
+  /** Mobile wording (one line); `value` is shown on wide screens. */
+  short?: string;
   /** Present for actionable items only. */
   href?: string;
   /** Screen-reader hint for links that open a new tab. */
@@ -128,7 +120,16 @@ function ContactItem({
       <span className={styles.text}>
         {/* The space keeps label and value apart in the link's accessible name. */}
         <span className={styles.label}>{label}</span>{" "}
-        <span className={`${styles.value} ${nowrap ? styles.nowrap : ""}`}>{value}</span>
+        <span className={`${styles.value} ${nowrap ? styles.nowrap : ""}`}>
+          {short ? (
+            <>
+              <span className={styles.long}>{value}</span>
+              <span className={styles.short}>{short}</span>
+            </>
+          ) : (
+            value
+          )}
+        </span>
       </span>
     </>
   );

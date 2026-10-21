@@ -88,9 +88,10 @@ export interface Dictionary {
     closing: string;
     /** Screen-reader hint appended to links that open a new tab. */
     external: string;
-    email: { label: string };
+    /** `short` replaces the address on mobile (the link stays the same). */
+    email: { label: string; short: string };
     /** `text` is shown instead of the URL. */
-    linkedin: { label: string; text: string };
+    linkedin: { label: string; text: string; short: string };
     phone: { label: string };
     /** Informational only (not a link). */
     location: { label: string; text: string };
