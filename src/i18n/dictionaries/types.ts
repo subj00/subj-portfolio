@@ -1,17 +1,17 @@
 import type { PageKey } from "../routes";
 import type { SectionKey } from "../sections";
 
-/** One education or work row of the About timeline. */
+/** One education or work row of the About timeline (static, fully visible). */
 export interface TimelineEntry {
   kind: "education" | "work";
   /** Institution or company. */
   title: string;
-  /** Degree / programme or role, one item per line. */
-  subtitle: string[];
-  /** As displayed, e.g. "2019 – 2023" or "2023 – danas". */
+  /** Role, or university and programme; one item per line. */
+  lines: string[];
+  /** Quieter extra line, e.g. an earlier role at the same company. */
+  note?: string;
+  /** As displayed, e.g. "2019–2023" or "2026–danas". */
   period: string;
-  /** Revealed by the row's disclosure; one item per line. */
-  details: string[];
 }
 
 /**
@@ -49,7 +49,9 @@ export interface Dictionary {
   about: {
     /** Heading in two lines; the second is set in the accent colour. */
     title: [string, string];
-    /** Short personal introduction. */
+    /** Opening statement under the heading (slightly emphasised). */
+    lead: string;
+    /** Personal introduction after the lead. */
     bio: string;
     /** Label of the CV download action. */
     cv: string;
@@ -57,7 +59,7 @@ export interface Dictionary {
     cvHint: string;
     /** Accessible name of the education/experience list. */
     timelineLabel: string;
-    /** Rows in display order (education first, then experience). */
+    /** Rows in display order (current work first, then degrees, newest first). */
     timeline: TimelineEntry[];
   };
   placeholder: {
