@@ -56,6 +56,27 @@ export const en: Dictionary = {
       },
     ],
   },
+  projects: {
+    intro: "From independent ideas to professional projects.",
+    visit: "Visit website",
+    external: "(opens in a new tab)",
+    soon: "Link coming soon",
+    items: {
+      dajana: {
+        category: "Independent project",
+        description: "Project description will be updated.",
+      },
+      "hrana-bez-mana": {
+        category: "Independent / client project",
+        description: "Project description will be updated.",
+      },
+      "american-eagle": {
+        category: "Professional contribution",
+        context: "As part of the team at Grid Dynamics",
+        description: "Professional contribution details will be updated.",
+      },
+    },
+  },
   placeholder: {
     inProgress: "This section is being built.",
   },

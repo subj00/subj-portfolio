@@ -1,4 +1,5 @@
 import type { PageKey } from "../routes";
+import type { ProjectId } from "@/content/projects";
 import type { SectionKey } from "../sections";
 
 /** One education or work row of the About timeline (static, fully visible). */
@@ -61,6 +62,17 @@ export interface Dictionary {
     timelineLabel: string;
     /** Rows in display order (current work first, then degrees, newest first). */
     timeline: TimelineEntry[];
+  };
+  projects: {
+    /** Short supporting line next to the section title. */
+    intro: string;
+    /** Label of an entry's external link. */
+    visit: string;
+    /** Screen-reader hint appended to external links. */
+    external: string;
+    /** Shown instead of the link while a project's URL is not available. */
+    soon: string;
+    items: Record<ProjectId, { category: string; description: string; context?: string }>;
   };
   placeholder: {
     inProgress: string;

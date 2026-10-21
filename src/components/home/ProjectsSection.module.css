@@ -1,0 +1,330 @@
+/*
+ * Projects (section 03). Same "wide" switch as the other sections
+ * (≥ 48rem and landscape). No images: typography, thin crimson borders and a
+ * faint red light carry the composition. No transforms on [data-projects]
+ * elements (reserved for the upcoming scroll transition).
+ */
+
+.projects {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+  padding: calc(var(--header-h) + env(safe-area-inset-top) + 1.5rem) var(--gutter-r)
+    calc(4rem + env(safe-area-inset-bottom)) var(--gutter-l);
+  overflow: clip;
+}
+
+/* Restrained dark-red atmosphere behind the panels. */
+.projects::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    radial-gradient(60% 45% at 50% 70%, rgb(120 0 10 / 0.16), transparent 70%),
+    radial-gradient(40% 35% at 85% 20%, rgb(150 0 14 / 0.1), transparent 70%);
+  pointer-events: none;
+}
+
+/* ---------- Heading ---------- */
+
+.heading {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+/* "03 —— PROJEKTI" */
+.index {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-size: 0.625rem;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: var(--color-mist);
+}
+
+.rule {
+  display: block;
+  width: 3.25rem;
+  height: 1px;
+  background: var(--color-line);
+}
+
+.title {
+  margin-top: 0.75rem;
+  font-size: clamp(2.5rem, 13.5vw, 3.75rem);
+  font-weight: 300;
+  line-height: 0.9;
+  letter-spacing: 0.05em; /* as the About title */
+  text-transform: uppercase;
+  color: var(--color-accent-bright);
+}
+
+.intro {
+  max-width: 22em;
+  font-family: var(--font-editorial);
+  font-size: clamp(0.9375rem, 4vw, 1.0625rem);
+  line-height: 1.45;
+  color: var(--color-soft);
+}
+
+/* ---------- Entries ---------- */
+
+.list {
+  display: grid;
+  gap: 1rem;
+}
+
+/* A tall typographic panel: meta at the top, title and text in the middle,
+   the action at the base. Thin crimson border, faint red light at the top. */
+.entry {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 19rem;
+  padding: 1.5rem 1.375rem 1.375rem;
+  border: 1px solid rgb(227 18 27 / 0.32);
+  background:
+    radial-gradient(90% 55% at 0% 0%, rgb(150 0 14 / 0.16), transparent 70%), rgb(10 4 5 / 0.6);
+  transition: border-color 0.4s;
+}
+
+/* Hover/focus illumination only where there is something to activate. */
+.entry:has(a:hover),
+.entry:has(a:focus-visible) {
+  border-color: rgb(255 48 56 / 0.7);
+}
+
+.meta {
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+}
+
+.number {
+  font-size: 1.75rem;
+  font-weight: 300;
+  line-height: 1;
+  letter-spacing: 0.02em;
+  color: var(--color-accent-bright);
+}
+
+.category {
+  font-size: 0.625rem;
+  letter-spacing: 0.3em;
+  line-height: 1.5;
+  text-transform: uppercase;
+  color: var(--color-mist);
+}
+
+.body {
+  margin-block: auto 2rem;
+  padding-top: 3rem;
+}
+
+.entryTitle {
+  font-size: clamp(1.75rem, 8.5vw, 2.25rem);
+  font-weight: 300;
+  line-height: 1.08;
+  letter-spacing: 0.01em;
+  color: var(--color-paper);
+  text-wrap: balance;
+}
+
+/* Professional work: who it was done for/with, right under the title. */
+.context {
+  margin-top: 0.6rem;
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  color: var(--color-accent-bright);
+}
+
+.description {
+  max-width: 26em;
+  margin-top: 1rem;
+  font-size: 0.9375rem;
+  font-weight: 300;
+  line-height: 1.6;
+  color: var(--color-soft);
+}
+
+/* Circular arrow + letter-spaced label (the site's CTA language). */
+.action {
+  display: inline-flex;
+  align-items: center;
+  gap: 1rem;
+  align-self: flex-start;
+  min-height: 2.75rem;
+  outline: none;
+}
+
+.ring {
+  display: grid;
+  place-items: center;
+  width: 2.5rem;
+  aspect-ratio: 1;
+  border: 1px solid rgb(227 18 27 / 0.7);
+  border-radius: 50%;
+  transition: border-color 0.3s;
+}
+
+/* A thin north-east arrow drawn with borders (external destination). */
+.arrow {
+  position: relative;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-top: 1px solid var(--color-paper);
+  border-right: 1px solid var(--color-paper);
+  transition: translate 0.3s;
+}
+
+.arrow::after {
+  content: "";
+  position: absolute;
+  top: -1px;
+  right: 0;
+  width: 0.7rem;
+  height: 1px;
+  background: var(--color-paper);
+  transform-origin: right;
+  rotate: -45deg;
+}
+
+.actionLabel {
+  font-size: 0.625rem;
+  letter-spacing: 0.4em;
+  text-transform: uppercase;
+  color: var(--color-paper);
+  text-decoration-color: var(--color-accent-bright);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.6em;
+}
+
+a.action:hover .ring,
+a.action:focus-visible .ring {
+  border-color: var(--color-accent-bright);
+}
+
+a.action:hover .arrow,
+a.action:focus-visible .arrow {
+  translate: 0.12rem -0.12rem;
+}
+
+a.action:focus-visible .actionLabel {
+  text-decoration-line: underline;
+}
+
+/* No URL yet: same composition, visibly inactive, not focusable. */
+.pending .ring {
+  border-color: var(--color-line);
+}
+
+.pending .arrow,
+.pending .arrow::after {
+  border-color: var(--color-mist);
+  background: var(--color-mist);
+}
+
+.pending .arrow {
+  background: none;
+}
+
+.pending .actionLabel {
+  color: var(--color-mist);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .entry,
+  .ring,
+  .arrow {
+    transition: none;
+  }
+}
+
+/* ---------- Wide: heading row, three panels side by side ---------- */
+
+@media (width >= 48rem) and (orientation: landscape) {
+  .projects {
+    justify-content: center;
+    gap: 2.4vw;
+    min-height: 100svh;
+    padding: calc(var(--header-h) * 0.84 + 2vw + env(safe-area-inset-top)) var(--gutter-r)
+      calc(2.5vw + env(safe-area-inset-bottom)) var(--gutter-l);
+  }
+
+  .heading {
+    flex-direction: row;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 4vw;
+  }
+
+  .index {
+    font-size: clamp(0.625rem, 0.75vw, 0.8125rem);
+  }
+
+  .rule {
+    width: 5.3vw;
+  }
+
+  .title {
+    margin-top: 2vw;
+    font-size: clamp(2.5rem, 5vw, 6.5rem);
+  }
+
+  .intro {
+    max-width: 24vw;
+    padding-bottom: 0.6vw;
+    font-size: clamp(0.875rem, 1.15vw, 1.375rem);
+    text-align: right;
+  }
+
+  .list {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1.6vw;
+  }
+
+  .entry {
+    /* Tall, but the whole section still fits one desktop screen. */
+    min-height: clamp(17rem, min(27vw, 52svh), 34rem);
+    padding: 2vw 2vw 1.8vw;
+  }
+
+  .number {
+    font-size: clamp(1.5rem, 2.3vw, 2.75rem);
+  }
+
+  .category {
+    font-size: clamp(0.5625rem, 0.72vw, 0.8125rem);
+  }
+
+  .body {
+    margin-bottom: 2.2vw;
+    padding-top: 2.5vw;
+  }
+
+  .entryTitle {
+    font-size: clamp(1.5rem, 2.35vw, 3rem);
+  }
+
+  .context {
+    font-size: clamp(0.6875rem, 0.82vw, 0.9375rem);
+  }
+
+  .description {
+    margin-top: 1.1vw;
+    font-size: clamp(0.8125rem, 1vw, 1.1875rem);
+  }
+
+  .ring {
+    width: clamp(2rem, 2.6vw, 3rem);
+  }
+
+  .actionLabel {
+    font-size: clamp(0.5625rem, 0.72vw, 0.8125rem);
+  }
+}

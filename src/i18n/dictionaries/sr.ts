@@ -56,6 +56,27 @@ export const sr: Dictionary = {
       },
     ],
   },
+  projects: {
+    intro: "Od samostalnih ideja do profesionalnih projekata.",
+    visit: "Poseti sajt",
+    external: "(otvara se u novoj kartici)",
+    soon: "Link uskoro",
+    items: {
+      dajana: {
+        category: "Samostalni projekat",
+        description: "Opis projekta će biti naknadno ažuriran.",
+      },
+      "hrana-bez-mana": {
+        category: "Samostalni / klijentski projekat",
+        description: "Opis projekta će biti naknadno ažuriran.",
+      },
+      "american-eagle": {
+        category: "Profesionalni angažman",
+        context: "Kao deo tima u kompaniji Grid Dynamics",
+        description: "Opis profesionalnog angažmana biće naknadno ažuriran.",
+      },
+    },
+  },
   placeholder: {
     inProgress: "Ova sekcija je u izradi.",
   },
