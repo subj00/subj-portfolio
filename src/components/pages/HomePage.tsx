@@ -1,5 +1,6 @@
 import { AboutSection } from "@/components/home/AboutSection";
 import { HeroSection } from "@/components/home/HeroSection";
+import { RedShift } from "@/components/home/RedShift";
 import { SectionPlaceholder } from "@/components/home/SectionPlaceholder";
 import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries/types";
@@ -23,6 +24,8 @@ export function HomePage({ locale, dict }: { locale: Locale; dict: Dictionary })
     <main id="main" tabIndex={-1} className="outline-none">
       <HeroSection locale={locale} dict={dict} />
       <AboutSection locale={locale} dict={dict} />
+      {/* Hero → About scroll transition (client; renders nothing visible). */}
+      <RedShift />
       {placeholder("projects")}
       {placeholder("contact")}
     </main>

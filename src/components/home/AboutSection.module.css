@@ -442,3 +442,31 @@
     font-size: clamp(0.625rem, 0.82vw, 0.9375rem);
   }
 }
+
+/* ---------- Red Shift (Hero → About transition) ---------- */
+
+/* Target box for the travelling sculpture: the portrait slot itself. */
+.portal {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+/* Thin red ring that rides the photo's circular reveal edge; invisible unless
+   the transition animates it. Centred where the reveal starts; its diameter is
+   set by RedShift to match the reveal's final radius. */
+.sweep {
+  position: absolute;
+  top: 42%;
+  left: 50%;
+  width: 200%;
+  aspect-ratio: 1;
+  border: 1px solid rgb(255 48 56 / 0.85);
+  border-radius: 50%;
+  box-shadow:
+    0 0 1.25rem 0.15rem rgb(255 30 40 / 0.45),
+    inset 0 0 1.25rem 0.15rem rgb(255 30 40 / 0.3);
+  opacity: 0;
+  translate: -50% -50%;
+  pointer-events: none;
+}

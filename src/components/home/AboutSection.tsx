@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { PortfolioSection } from "@/components/layout/PortfolioSection";
+import { SceneAnchor } from "@/runtime/scene/SceneAnchor";
 import { site } from "@/content/site";
 import type { Locale } from "@/i18n/config";
 import type { Dictionary, TimelineEntry } from "@/i18n/dictionaries/types";
@@ -24,6 +25,10 @@ const ICONS = { education: universityIcon, work: jobIcon } as const;
  *            heading, then statement, introduction, CV action, timeline
  * The timeline is static and fully visible (work, then degrees): icons, a red
  * rail with dots, thin separators and dates. Server component, no JavaScript.
+ *
+ * data-shift marks what the Hero → About transition (RedShift) animates; the
+ * "portal" SceneAnchor is where the hero sculpture travels and dissolves.
+ * Without that transition (no JS, reduced motion) everything is simply visible.
  */
 export function AboutSection({ locale, dict }: { locale: Locale; dict: Dictionary }) {
   const about = dict.about;
@@ -40,16 +45,26 @@ export function AboutSection({ locale, dict }: { locale: Locale; dict: Dictionar
       </svg>
 
       <div className={styles.intro}>
-        <p aria-hidden className={styles.index}>
+        <p aria-hidden data-shift="about-text" className={styles.index}>
           02
           <span className={styles.rule} />
         </p>
-        <h2 id="about-title" className={styles.title}>
+        <h2 id="about-title" data-shift="about-text" className={styles.title}>
           <span>{about.title[0]}</span> <span className={styles.accent}>{about.title[1]}</span>
         </h2>
-        <p className={styles.lead}>{about.lead}</p>
-        <p className={styles.bio}>{about.bio}</p>
-        <a href={CV_PATH} download={CV_FILE_NAME} type="application/pdf" className={styles.cv}>
+        <p data-shift="about-text" className={styles.lead}>
+          {about.lead}
+        </p>
+        <p data-shift="about-text" className={styles.bio}>
+          {about.bio}
+        </p>
+        <a
+          href={CV_PATH}
+          download={CV_FILE_NAME}
+          type="application/pdf"
+          data-shift="about-text"
+          className={styles.cv}
+        >
           <span aria-hidden className={styles.ring}>
             <span className={styles.dot} />
           </span>
@@ -58,13 +73,17 @@ export function AboutSection({ locale, dict }: { locale: Locale; dict: Dictionar
         </a>
       </div>
 
-      <figure className={styles.portrait}>
+      <figure data-shift="portrait" className={styles.portrait}>
         <Image
           src={portrait}
           alt={site.name}
           sizes="(width >= 48rem) and (orientation: landscape) 25vw, 100vw"
           className={styles.photo}
         />
+        {/* Where the hero sculpture travels to (RedShift), and the red ring riding the
+            reveal edge. Both decorative. */}
+        <SceneAnchor scene="hero" name="portal" className={styles.portal} />
+        <span aria-hidden data-shift="sweep" className={styles.sweep} />
       </figure>
 
       <ol aria-label={about.timelineLabel} className={styles.timeline}>
@@ -78,7 +97,7 @@ export function AboutSection({ locale, dict }: { locale: Locale; dict: Dictionar
 
 function TimelineRow({ entry }: { entry: TimelineEntry }) {
   return (
-    <li className={styles.entry}>
+    <li data-shift="about-row" className={styles.entry}>
       <Image src={ICONS[entry.kind]} alt="" sizes="2rem" className={styles.icon} />
       <span aria-hidden className={styles.node} />
       <div className={styles.head}>

@@ -118,6 +118,8 @@ export default function HeroScene() {
   const pose = useRef<Group>(null);
   const halo = useRef<Mesh>(null);
   const [frame] = useState(createAnchorFrame);
+  const [portalFrame] = useState(createAnchorFrame);
+  const trailsLayer = useRef<Group>(null);
   const motion = useRef({
     time: 0,
     clock: 0,
@@ -180,21 +182,34 @@ export default function HeroScene() {
   useFrame((state, delta) => {
     const anchor = anchorLayer.current;
     if (!anchor) return;
-    anchor.visible = sampleAnchor("hero", "sculpture", state.camera, state.size, frame);
+    const rig = sceneRigs.hero;
+    // Hidden once it has dissolved into the portrait (Red Shift end state).
+    anchor.visible =
+      rig.presence > 0.005 && sampleAnchor("hero", "sculpture", state.camera, state.size, frame);
     if (!anchor.visible) return;
 
-    // Anchor layer: centre and size of the sculpture box (core radius ≈ 1).
-    anchor.position.copy(frame.position);
-    anchor.scale.setScalar(Math.min(frame.width, frame.height) / 2);
+    // Anchor layer: centre and size of the sculpture box (core radius ≈ 1),
+    // blended toward the About portrait box (anchor "portal") by rig.travel.
+    const size = Math.min(frame.width, frame.height) / 2;
+    if (rig.travel > 0 && sampleAnchor("hero", "portal", state.camera, state.size, portalFrame)) {
+      anchor.position.lerpVectors(frame.position, portalFrame.position, rig.travel);
+      const portalSize = Math.min(portalFrame.width, portalFrame.height) / 2;
+      anchor.scale.setScalar(MathUtils.lerp(size, portalSize, rig.travel));
+    } else {
+      anchor.position.copy(frame.position);
+      anchor.scale.setScalar(size);
+    }
 
-    // Scroll layer: rig values (neutral until Step 4 timelines drive them).
-    const rig = sceneRigs.hero;
+    // Scroll layer: rig values. Intro (scale, turn) composed with the Red Shift
+    // (presence, spin); offsets reserved for later section transitions.
     const scroll = scrollLayer.current;
     if (scroll) {
       scroll.position.set(rig.offsetX, rig.offsetY, 0);
-      scroll.scale.setScalar(rig.scale);
-      scroll.rotation.y = rig.turn;
+      scroll.scale.setScalar(rig.scale * rig.presence);
+      scroll.rotation.y = rig.turn + rig.spin;
     }
+    // Orbital trails elongate during the transition (in sculpture space).
+    trailsLayer.current?.scale.set(1 + 0.7 * rig.stretch, 1 - 0.22 * rig.stretch, 1);
 
     const reduced = stageStore.getState().reducedMotion;
     const m = motion.current;
@@ -257,7 +272,7 @@ export default function HeroScene() {
     updateEnergyUniforms(uniforms, {
       time: t,
       clock: m.clock,
-      energy: boot * rig.energy * (1 + 0.15 * m.hover + surge),
+      energy: boot * rig.energy * rig.surge * (1 + 0.15 * m.hover + surge),
       impactMotion: !reduced,
     });
 
@@ -287,9 +302,11 @@ export default function HeroScene() {
                 <group ref={pose} rotation={POSE}>
                   <mesh geometry={coreGeometry} material={coreMaterial} />
                   <mesh geometry={shellGeometry} material={shellMaterial} />
-                  {trails.items.map(({ geometry, material }, i) => (
-                    <mesh key={i} geometry={geometry} material={material} renderOrder={2} />
-                  ))}
+                  <group ref={trailsLayer}>
+                    {trails.items.map(({ geometry, material }, i) => (
+                      <mesh key={i} geometry={geometry} material={material} renderOrder={2} />
+                    ))}
+                  </group>
                   <points
                     geometry={burstGeometry}
                     material={burstMaterial}

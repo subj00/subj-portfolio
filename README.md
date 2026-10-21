@@ -78,6 +78,12 @@ the hero's scene slot; CSS decides its box per layout):
 Additive shaders put their falloff in alpha: the canvas is transparent, so an opaque black pixel
 would show against the page background.
 
+Hero → About transition ("Red Shift", `src/components/home/RedShift.tsx`): one scrubbed ScrollTrigger
+timeline over the screen between the two sections (no pinning). It drives the hero rig's transition
+values (`travel`, `presence`, `surge`, `spin`, `stretch`): the sculpture blends from its hero box to
+the About portrait box (a second anchor of the same scene, `hero/portal`) and dissolves into it
+while the photo is revealed. DOM targets carry `data-shift`. Reduced motion: no timeline.
+
 The renderer uses Neutral tone mapping (ACES shifts saturated reds toward orange).
 
 ## Animation and interaction

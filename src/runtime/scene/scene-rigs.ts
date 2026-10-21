@@ -31,6 +31,21 @@ export const sceneRigs = {
     turn: 0,
     /** 0 → 1 energy level (trail and crack intensity); 1 at rest. */
     energy: 1,
+    /*
+     * Hero → About scroll transition ("Red Shift", RedShift.tsx). Written only
+     * by its scrubbed timeline; the scene composes them with the values above
+     * (the intro owns energy/scale/turn), so the two never fight.
+     */
+    /** 0 → 1: the sculpture travels from its hero box to the About portrait box. */
+    travel: 0,
+    /** Scale multiplier, 1 at rest → 0 when it has dissolved into the portrait. */
+    presence: 1,
+    /** Energy multiplier, 1 at rest. */
+    surge: 1,
+    /** Extra turn (radians) on top of `turn`. */
+    spin: 0,
+    /** 0 → 1: orbital trails elongate toward the travel direction. */
+    stretch: 0,
     /**
      * Power-on impulse counter. Each increment fires one energy impact (flash,
      * vein ripple, sparks, recoil) on the camera-facing side, like a click.

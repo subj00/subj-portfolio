@@ -26,7 +26,7 @@ export function HeroSection({ locale, dict }: { locale: Locale; dict: Dictionary
       <HeroSceneSlot />
       <HeroIntro />
 
-      <div className={styles.content}>
+      <div data-shift="hero-content" className={styles.content}>
         <p data-intro-el="eyebrow" className={styles.eyebrow}>
           <span aria-hidden className={styles.index}>
             01
