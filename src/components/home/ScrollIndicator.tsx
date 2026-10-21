@@ -8,6 +8,7 @@ export function ScrollIndicator({ label }: { label: string }) {
   return (
     <div
       aria-hidden
+      data-intro-el="scroll"
       className="pointer-events-none absolute bottom-[calc(1rem+env(safe-area-inset-bottom))] left-1/2 z-[1] flex -translate-x-1/2 flex-col items-center gap-3 wide:top-[44%] wide:right-[var(--gutter-r)] wide:bottom-auto wide:left-auto wide:translate-x-1/2"
     >
       <span className="flex flex-col items-center">

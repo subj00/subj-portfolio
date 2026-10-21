@@ -48,12 +48,18 @@ export function ExperienceRoot({ children }: { children: ReactNode }) {
   }, []);
 
   // Load the WebGL chunk the first time a page asks for a scene, once the main
-  // thread is idle, so it never competes with hydration or LCP.
+  // thread is idle, so it never competes with hydration or LCP. Exception: while
+  // the hero intro plays (html[data-intro]) the page is dark anyway and the
+  // sculpture is part of the reveal, so it loads right away.
   useEffect(() => {
     if (!wantsStage || status !== "idle") return;
     const start = () => {
       if (stageStore.getState().status === "idle") setStageStatus("loading");
     };
+    if (document.documentElement.hasAttribute("data-intro")) {
+      start();
+      return;
+    }
     if ("requestIdleCallback" in window) {
       const id = window.requestIdleCallback(start, { timeout: 1500 });
       return () => window.cancelIdleCallback(id);

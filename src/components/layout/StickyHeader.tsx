@@ -39,7 +39,8 @@ export function StickyHeader({ className, children }: { className: string; child
   });
 
   return (
-    <header ref={header} className={className}>
+    // data-intro-el: revealed by the hero intro (HeroIntro) when it plays.
+    <header ref={header} data-intro-el="chrome" className={className}>
       {children}
     </header>
   );

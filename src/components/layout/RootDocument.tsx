@@ -1,5 +1,6 @@
 import { Jost, Space_Grotesk } from "next/font/google";
 import type { ReactNode } from "react";
+import { INTRO_GATE_SCRIPT } from "@/animation/intro-gate";
 import { ExperienceRoot } from "@/runtime/ExperienceRoot";
 import "@/styles/globals.css";
 
@@ -27,8 +28,17 @@ const spaceGrotesk = Space_Grotesk({
  */
 export function RootDocument({ lang, children }: { lang: string; children: ReactNode }) {
   return (
-    <html lang={lang} className={`${jost.variable} ${spaceGrotesk.variable}`}>
+    // suppressHydrationWarning: the intro gate and the runtime set data-* attributes
+    // on <html> before React hydrates.
+    <html
+      lang={lang}
+      className={`${jost.variable} ${spaceGrotesk.variable}`}
+      suppressHydrationWarning
+    >
       <body>
+        {/* First in <body>, so it runs before anything is painted: decides whether the
+            hero intro plays (intro-gate.ts). */}
+        <script dangerouslySetInnerHTML={{ __html: INTRO_GATE_SCRIPT }} />
         <ExperienceRoot>{children}</ExperienceRoot>
       </body>
     </html>

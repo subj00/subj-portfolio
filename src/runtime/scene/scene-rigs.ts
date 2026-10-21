@@ -31,6 +31,12 @@ export const sceneRigs = {
     turn: 0,
     /** 0 → 1 energy level (trail and crack intensity); 1 at rest. */
     energy: 1,
+    /**
+     * Power-on impulse counter. Each increment fires one energy impact (flash,
+     * vein ripple, sparks, recoil) on the camera-facing side, like a click.
+     * The scene reacts to increases only, so a revert to 0 does nothing.
+     */
+    ignite: 0,
   },
   lab: {
     /** 0→1 scroll progress through the sync demo. */

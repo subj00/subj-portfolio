@@ -56,12 +56,19 @@ import {
  * Click/tap goes through useObjectInteraction on an invisible low-poly proxy
  * shell (R3F raycasting, tap-vs-drag, locks and touch rules all shared with the
  * rest of the app) and triggers, in the same frame: flash + ripple (shader
- * uniforms), a spark burst (GPU pool) and the impulse (impact layer).
+ * uniforms), a spark burst (GPU pool) and the impulse (impact layer). The intro
+ * fires the same impact on the camera-facing side through sceneRigs.hero.ignite.
+ *
+ * Boot: the first ~0.7s after the scene first appears it powers on (energy and
+ * a slight swell ramp in), so a late-loading scene never pops in at full glow.
  */
 
 const POSE = new Euler(0.32, -0.42, -0.38);
 const POINTER_TILT = { x: 0.16, y: 0.26 };
 const IMPACT_DURATION = VEIN_PARAMS.impactLife;
+const BOOT_SECONDS = 0.7;
+/** Where the intro's ignite lands: toward the camera, nudged up and to the left. */
+const IGNITE_NUDGE = new Vector3(-0.35, 0.3, 0);
 
 const _local = new Vector3();
 const _normal = new Vector3();
@@ -122,29 +129,34 @@ export default function HeroScene() {
     impactReduced: false,
     impactNormal: new Vector3(0, 0, 1),
     random: seededRandom(29),
+    ignite: sceneRigs.hero.ignite,
+    boot: 0,
   });
+
+  /** One energy impact at `normal` (sculpture space, unit length). */
+  const strike = (normal: Vector3) => {
+    const m = motion.current;
+    const reduced = stageStore.getState().reducedMotion;
+    _local.copy(normal).multiplyScalar(1.02); // settled onto the core's surface
+    recordImpact(uniforms, m.impactSlot++, _local, m.clock);
+    m.lastImpact = m.clock;
+    m.impactReduced = reduced;
+    m.impactNormal.copy(normal);
+    if (!reduced && detail.burst > 0) {
+      emitBurst(burstGeometry, m.burstSlot, detail.burst, _local, normal, m.clock, m.random);
+      m.burstSlot = (m.burstSlot + detail.burst) % (detail.burst * 3);
+    }
+  };
 
   const { state: interaction, handlers } = useObjectInteraction({
     enabled: () => anchorLayer.current?.visible ?? false,
     onActivate: (event: ThreeEvent<MouseEvent>) => {
       const space = pose.current;
       if (!space) return;
-      const m = motion.current;
-      const reduced = stageStore.getState().reducedMotion;
-      // Contact point in sculpture space, settled onto the core's surface.
-      _local.copy(event.point);
-      space.worldToLocal(_local);
-      _normal.copy(_local).normalize();
-      _local.copy(_normal).multiplyScalar(1.02);
-
-      recordImpact(uniforms, m.impactSlot++, _local, m.clock);
-      m.lastImpact = m.clock;
-      m.impactReduced = reduced;
-      m.impactNormal.copy(_normal);
-      if (!reduced && detail.burst > 0) {
-        emitBurst(burstGeometry, m.burstSlot, detail.burst, _local, _normal, m.clock, m.random);
-        m.burstSlot = (m.burstSlot + detail.burst) % (detail.burst * 3);
-      }
+      // Contact point in sculpture space.
+      _normal.copy(event.point);
+      space.worldToLocal(_normal);
+      strike(_normal.normalize());
     },
   });
 
@@ -185,6 +197,16 @@ export default function HeroScene() {
     const m = motion.current;
     m.clock += delta;
     if (!reduced) m.time += delta;
+    m.boot = Math.min(1, m.boot + delta / BOOT_SECONDS);
+    const boot = reduced ? 1 : 1 - (1 - m.boot) ** 3;
+
+    // Intro ignite: an impact on the side facing the camera (increments only).
+    if (rig.ignite > m.ignite && pose.current) {
+      _normal.copy(state.camera.position);
+      pose.current.worldToLocal(_normal);
+      strike(_normal.normalize().add(IGNITE_NUDGE).normalize());
+    }
+    m.ignite = rig.ignite;
 
     // Pointer layer: damped tilt toward the pointer, back to rest when it leaves.
     const pointer = pointerLayer.current;
@@ -221,15 +243,16 @@ export default function HeroScene() {
       ambient.rotation.z = Math.sin(t * 0.21) * 0.05;
       ambient.rotation.x = Math.sin(t * 0.17 + 1.3) * 0.04;
       ambient.position.y = Math.sin(t * 0.55) * 0.035;
+      ambient.scale.setScalar(0.94 + 0.06 * boot);
     }
 
-    // Energy: scroll rig × hover lift × impact surge (decays over ~0.6s).
+    // Energy: boot × scroll/intro rig × hover lift × impact surge (decays over ~0.6s).
     m.hover = MathUtils.damp(m.hover, interaction.current.hovered ? 1 : 0, 6, delta);
     const surge = age < IMPACT_DURATION ? Math.exp(-age * 4) * (m.impactReduced ? 0.4 : 0.8) : 0;
     updateEnergyUniforms(uniforms, {
       time: t,
       clock: m.clock,
-      energy: rig.energy * (1 + 0.15 * m.hover + surge),
+      energy: boot * rig.energy * (1 + 0.15 * m.hover + surge),
       impactMotion: !reduced,
     });
 

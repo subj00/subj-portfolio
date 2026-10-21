@@ -74,3 +74,57 @@ body {
     outline: none;
   }
 }
+
+/*
+ * Hero intro (HeroIntro). html[data-intro] is set before first paint by the
+ * gate script (intro-gate.ts): "play" until the intro starts, "running" while
+ * it plays, removed when it ends. GSAP inline styles take over from these
+ * starting states; nothing here applies once the attribute is gone.
+ */
+[data-intro-overlay],
+[data-intro-edge] {
+  display: none;
+}
+
+html[data-intro] [data-intro-overlay],
+html[data-intro] [data-intro-edge] {
+  display: block;
+}
+
+html[data-intro] [data-intro-el] {
+  opacity: 0;
+}
+
+/* The name image is wiped in (the h1 stays visible: it carries the edge light). */
+html[data-intro] [data-intro-el="name"] {
+  opacity: 1;
+}
+
+html[data-intro] [data-intro-el="name"] > img {
+  clip-path: inset(0 100% 0 0);
+}
+
+/* Fail-safe: if the intro never starts, reveal everything after 3.5s
+   (INTRO_FAILSAFE_MS). Only while "play": a running intro owns these styles. */
+html[data-intro="play"] [data-intro-el],
+html[data-intro="play"] [data-intro-el="name"] > img {
+  animation: intro-failsafe-reveal 0.4s 3.5s forwards;
+}
+
+html[data-intro="play"] [data-intro-overlay] {
+  animation: intro-failsafe-hide 0.4s 3.5s forwards;
+}
+
+@keyframes intro-failsafe-reveal {
+  to {
+    opacity: 1;
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+@keyframes intro-failsafe-hide {
+  to {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
