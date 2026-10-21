@@ -77,10 +77,6 @@ export interface Dictionary {
       {
         category: string;
         description: string;
-        /** Who the work was done with (professional work), shown under the title. */
-        context?: string;
-        /** Small note under the link, e.g. that it is a client's public website. */
-        linkNote?: string;
       }
     >;
   };

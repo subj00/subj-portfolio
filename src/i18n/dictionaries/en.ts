@@ -64,17 +64,18 @@ export const en: Dictionary = {
     items: {
       dajana: {
         category: "Client project",
-        description: "Project description will be updated.",
+        description:
+          "A modern, well-structured portfolio website that showcases professional experience and work in digital marketing through minimalist design, clear navigation, and thoughtfully organized content.",
       },
       "hrana-bez-mana": {
         category: "Client project",
-        description: "Project description will be updated.",
+        description:
+          "A modern, visually playful website with a design tailored to the products it showcases, focusing on an engaging presentation, clear content structure, and an intuitive user experience.",
       },
       "american-eagle": {
         category: "Professional experience",
-        context: "As part of the team at Grid Dynamics",
-        linkNote: "Public client website",
-        description: "Professional contribution details will be updated.",
+        description:
+          "Development, maintenance, and improvement of the American Eagle Outfitters e-commerce platform as part of the Grid Dynamics team, focusing on system quality, stability, and functionality.",
       },
     },
   },

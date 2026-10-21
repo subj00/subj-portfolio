@@ -64,17 +64,18 @@ export const sr: Dictionary = {
     items: {
       dajana: {
         category: "Klijentski projekat",
-        description: "Opis projekta će biti naknadno ažuriran.",
+        description:
+          "Moderan i pregledan portfolio sajt koji kroz minimalistički dizajn, jasnu strukturu i pažljivo organizovan sadržaj predstavlja profesionalno iskustvo i rad u digitalnom marketingu.",
       },
       "hrana-bez-mana": {
         category: "Klijentski projekat",
-        description: "Opis projekta će biti naknadno ažuriran.",
+        description:
+          "Moderan i vizuelno razigran sajt čiji je dizajn pažljivo prilagođen tematici proizvoda, sa fokusom na atraktivnu prezentaciju ponude, preglednu strukturu i jednostavno korisničko iskustvo.",
       },
       "american-eagle": {
         category: "Profesionalni angažman",
-        context: "Kao deo tima u kompaniji Grid Dynamics",
-        linkNote: "Javni sajt klijenta",
-        description: "Opis profesionalnog angažmana biće naknadno ažuriran.",
+        description:
+          "Rad na razvoju, održavanju i unapređenju e-commerce platforme American Eagle Outfitters, kao deo tima kompanije Grid Dynamics, sa fokusom na kvalitet, stabilnost i funkcionalnost sistema.",
       },
     },
   },
