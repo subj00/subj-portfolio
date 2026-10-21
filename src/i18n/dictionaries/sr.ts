@@ -30,7 +30,7 @@ export const sr: Dictionary = {
   about: {
     title: ["O", "meni"],
     lead: "Radoznalost me pokreće. Kreativnost me zadržava.",
-    bio: "Volim da istražujem ideje i pretvaram ih u digitalna iskustva. Inspiraciju pronalazim i van ekrana — na putovanjima, u novim mestima, kulturama i razgovorima koji otvaraju drugačije perspektive.",
+    bio: "Volim da istražujem ideje i pretvaram ih u digitalna iskustva. Inspiraciju pronalazim i van ekrana - na putovanjima, u novim mestima, kulturama i razgovorima koji otvaraju drugačije perspektive.",
     cv: "Preuzmi CV",
     cvHint: "(PDF)",
     timelineLabel: "Obrazovanje i iskustvo",
