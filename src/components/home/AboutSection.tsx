@@ -28,7 +28,9 @@ const ICONS = { education: universityIcon, work: jobIcon } as const;
  *
  * data-shift marks what the Hero → About transition (RedShift) animates; the
  * "portal" SceneAnchor is where the hero sculpture travels and dissolves.
- * Without that transition (no JS, reduced motion) everything is simply visible.
+ * data-fracture marks what the About → Projects transition (RedFracture)
+ * animates: the parents of data-shift elements, so the two never share a target.
+ * Without those transitions (no JS, reduced motion) everything is simply visible.
  */
 export function AboutSection({ locale, dict }: { locale: Locale; dict: Dictionary }) {
   const about = dict.about;
@@ -44,7 +46,7 @@ export function AboutSection({ locale, dict }: { locale: Locale; dict: Dictionar
         <path d="M690 360 C 760 420, 820 440, 905 456" />
       </svg>
 
-      <div className={styles.intro}>
+      <div data-fracture="about-intro" className={styles.intro}>
         <p aria-hidden data-shift="about-text" className={styles.index}>
           02
           <span className={styles.rule} />
@@ -73,7 +75,7 @@ export function AboutSection({ locale, dict }: { locale: Locale; dict: Dictionar
         </a>
       </div>
 
-      <figure data-shift="portrait" className={styles.portrait}>
+      <figure data-shift="portrait" data-fracture="about-portrait" className={styles.portrait}>
         <Image
           src={portrait}
           alt={site.name}
@@ -84,9 +86,15 @@ export function AboutSection({ locale, dict }: { locale: Locale; dict: Dictionar
             reveal edge. Both decorative. */}
         <SceneAnchor scene="hero" name="portal" className={styles.portal} />
         <span aria-hidden data-shift="sweep" className={styles.sweep} />
+        {/* Red atmosphere the About → Projects transition (RedFracture) intensifies. */}
+        <span aria-hidden data-fracture="glow" className={styles.glow} />
       </figure>
 
-      <ol aria-label={about.timelineLabel} className={styles.timeline}>
+      <ol
+        aria-label={about.timelineLabel}
+        data-fracture="about-timeline"
+        className={styles.timeline}
+      >
         {about.timeline.map((entry) => (
           <TimelineRow key={entry.title} entry={entry} />
         ))}

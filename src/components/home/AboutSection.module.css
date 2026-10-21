@@ -470,3 +470,21 @@
   translate: -50% -50%;
   pointer-events: none;
 }
+
+/* ---------- Red Fracture (About → Projects transition) ---------- */
+
+/* Red atmosphere around the portrait; invisible unless the transition
+   intensifies it. A plain radial gradient (no filters). */
+.glow {
+  position: absolute;
+  inset: -18% -22%;
+  z-index: -1;
+  background: radial-gradient(
+    closest-side,
+    rgb(255 30 40 / 0.42),
+    rgb(170 0 12 / 0.18) 55%,
+    transparent 100%
+  );
+  opacity: 0;
+  pointer-events: none;
+}

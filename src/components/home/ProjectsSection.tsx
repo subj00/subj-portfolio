@@ -14,8 +14,9 @@ import styles from "./ProjectsSection.module.css";
  * link (or "link coming soon" while the URL is unknown), pinned to the base.
  * Content: src/content/projects.ts + dictionaries.
  *
- * data-projects marks the parts a later scroll transition will animate; the
- * CSS keeps transforms off them so GSAP can own them cleanly.
+ * data-projects marks what the About → Projects transition (RedFracture)
+ * animates; the CSS keeps transforms off them so GSAP owns them cleanly. The
+ * transition only fades the panels (never their borders), so hover still works.
  */
 export function ProjectsSection({ locale, dict }: { locale: Locale; dict: Dictionary }) {
   return (
@@ -27,16 +28,18 @@ export function ProjectsSection({ locale, dict }: { locale: Locale; dict: Dictio
     >
       <header data-projects="heading" className={styles.heading}>
         <div>
-          <p aria-hidden className={styles.index}>
+          <p aria-hidden data-projects="heading-part" className={styles.index}>
             03
             <span className={styles.rule} />
             {dict.nav.sections.projects}
           </p>
-          <h2 id="projects-title" className={styles.title}>
+          <h2 id="projects-title" data-projects="heading-part" className={styles.title}>
             {dict.nav.sections.projects}
           </h2>
         </div>
-        <p className={styles.intro}>{dict.projects.intro}</p>
+        <p data-projects="heading-part" className={styles.intro}>
+          {dict.projects.intro}
+        </p>
       </header>
 
       <ol className={styles.list}>
@@ -62,19 +65,27 @@ function ProjectEntry({
   return (
     <li data-projects="entry" className={styles.entry}>
       <div className={styles.meta}>
-        <span aria-hidden className={styles.number}>
+        <span aria-hidden data-projects="number" className={styles.number}>
           {number}
         </span>
-        <p className={styles.category}>{text.category}</p>
+        <p data-projects="part" className={styles.category}>
+          {text.category}
+        </p>
       </div>
 
-      <div className={styles.body}>
+      <div data-projects="part" className={styles.body}>
         <h3 className={styles.entryTitle}>{project.title}</h3>
         <p className={styles.description}>{text.description}</p>
       </div>
 
       {project.url ? (
-        <a href={project.url} target="_blank" rel="noopener noreferrer" className={styles.action}>
+        <a
+          href={project.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          data-projects="part"
+          className={styles.action}
+        >
           <span aria-hidden className={styles.ring}>
             <span className={styles.arrow} />
           </span>

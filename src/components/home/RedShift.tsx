@@ -8,6 +8,7 @@ import {
   ScrollTrigger,
   useGSAP,
 } from "@/animation/gsap";
+import { resettleOnRefresh } from "@/animation/scrubbed";
 import { sceneRigs } from "@/runtime/scene/scene-rigs";
 
 /**
@@ -92,7 +93,10 @@ export function RedShift() {
             end: "top top",
             scrub: true,
             invalidateOnRefresh: true,
-            onRefresh: sizeSweep,
+            onRefresh: (self) => {
+              sizeSweep();
+              resettleOnRefresh(self);
+            },
           },
         });
 
@@ -155,6 +159,8 @@ export function RedShift() {
           { y: 0, opacity: 1, duration: 0.16, ease: "power2.out", stagger: 0.03 },
           0.78,
         );
+        // Exactly 1 long, so scroll progress = timeline time (the stages above).
+        tl.set({}, {}, 1);
       },
     );
 
