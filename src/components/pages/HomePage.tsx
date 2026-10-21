@@ -1,27 +1,18 @@
 import { AboutSection } from "@/components/home/AboutSection";
+import { ContactSection } from "@/components/home/ContactSection";
 import { HeroSection } from "@/components/home/HeroSection";
 import { ProjectsSection } from "@/components/home/ProjectsSection";
 import { RedFracture } from "@/components/home/RedFracture";
 import { RedShift } from "@/components/home/RedShift";
-import { SectionPlaceholder } from "@/components/home/SectionPlaceholder";
 import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries/types";
 
 /**
  * The portfolio: one continuous page whose sections (in scroll order) will
  * transform into one another through ScrollTrigger and the persistent WebGL
- * stage. Hero, About and Projects are designed; Contact is a placeholder.
+ * stage: Hero, About, Projects, Contact.
  */
 export function HomePage({ locale, dict }: { locale: Locale; dict: Dictionary }) {
-  const placeholder = (section: "contact") => (
-    <SectionPlaceholder
-      locale={locale}
-      section={section}
-      title={dict.nav.sections[section]}
-      body={dict.placeholder.inProgress}
-    />
-  );
-
   return (
     // relative: the About → Projects energy overlay (RedFracture) is positioned in it.
     <main id="main" tabIndex={-1} className="relative outline-none">
@@ -32,7 +23,7 @@ export function HomePage({ locale, dict }: { locale: Locale; dict: Dictionary })
       <ProjectsSection locale={locale} dict={dict} />
       {/* About → Projects transition and its energy overlay (client). */}
       <RedFracture />
-      {placeholder("contact")}
+      <ContactSection locale={locale} dict={dict} />
     </main>
   );
 }

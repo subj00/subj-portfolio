@@ -1,0 +1,368 @@
+/*
+ * Contact (section 04). Same "wide" switch as the other sections
+ * (≥ 48rem and landscape). Wide values follow the reference (1680px frame),
+ * expressed in vw: heading ≈ 45vw wide, contact grid ≈ 51vw (two columns),
+ * panels ≈ 6.7vw tall, icons ≈ 3.8vw, orbits filling the right ≈ 55vw.
+ * No transforms on [data-contact] / [data-orbit] (reserved for a later
+ * transition).
+ */
+
+.contact {
+  position: relative;
+  isolation: isolate;
+  min-height: 100svh;
+  padding: calc(var(--header-h) + env(safe-area-inset-top) + 1.5rem) var(--gutter-r)
+    calc(3rem + env(safe-area-inset-bottom)) var(--gutter-l);
+  overflow: clip;
+}
+
+/* Crimson light rising from the lower right (and a whisper at the left base). */
+.contact::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  background:
+    radial-gradient(55% 45% at 100% 85%, rgb(170 0 14 / 0.34), transparent 70%),
+    radial-gradient(35% 30% at 0% 100%, rgb(120 0 10 / 0.18), transparent 70%);
+  pointer-events: none;
+}
+
+/* ---------- Orbits ---------- */
+
+/* Mobile: a lighter composition behind the top of the section. */
+.orbits {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: -1;
+  width: 100%;
+  height: 34rem;
+  opacity: 0.4;
+  mask-image: linear-gradient(to bottom, #000 55%, transparent);
+  pointer-events: none;
+}
+
+.orbitSvg {
+  width: 100%;
+  height: 100%;
+}
+
+/* ---------- Content ---------- */
+
+.content {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+/* "04 —— KONTAKT" */
+.index {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-size: 0.625rem;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: var(--color-paper);
+}
+
+.rule {
+  display: block;
+  width: 3.25rem;
+  height: 1px;
+  background: var(--color-line);
+}
+
+.title {
+  display: flex;
+  flex-direction: column;
+  margin-top: 1.5rem;
+  font-size: clamp(2.25rem, 11.2vw, 3.75rem);
+  font-weight: 400;
+  line-height: 0.94;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+  color: rgb(232 232 232);
+}
+
+.accent {
+  color: var(--color-accent-bright);
+}
+
+.intro {
+  max-width: 30em;
+  margin-top: 1.25rem;
+  font-size: clamp(0.9375rem, 4vw, 1.0625rem);
+  font-weight: 300;
+  line-height: 1.55;
+  color: var(--color-paper);
+}
+
+.grid {
+  display: grid;
+  gap: 0.75rem;
+  width: 100%;
+  margin-top: 2rem;
+}
+
+.item {
+  display: flex;
+}
+
+/* Rectangular panel: thin crimson outline, faint red light inside. */
+.panel {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  width: 100%;
+  min-height: 5.25rem;
+  padding: 0.875rem;
+  border: 1px solid rgb(227 18 27 / 0.5);
+  background: linear-gradient(115deg, rgb(150 0 14 / 0.16), rgb(10 4 5 / 0.5) 60%);
+  outline: none;
+  transition:
+    border-color 0.35s,
+    background-color 0.35s;
+}
+
+a.panel:hover,
+a.panel:focus-visible {
+  border-color: rgb(255 48 56 / 0.9);
+}
+
+.icon {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: clamp(2.5rem, 13vw, 3rem);
+  aspect-ratio: 1;
+}
+
+.iconImage {
+  width: 100%;
+  height: auto;
+}
+
+/* The location PNG has no circle of its own: the same ring, drawn in CSS. */
+.iconRinged {
+  border: 2px solid #ff3038;
+  border-radius: 50%;
+}
+
+.iconRinged .iconImage {
+  width: 62%;
+}
+
+.text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 0.35rem;
+  min-width: 0;
+}
+
+.label {
+  font-size: 0.5625rem;
+  letter-spacing: 0.38em;
+  text-transform: uppercase;
+  color: var(--color-soft);
+}
+
+.value {
+  font-size: clamp(0.875rem, 4.4vw, 1rem);
+  font-weight: 300;
+  line-height: 1.3;
+  color: var(--color-paper);
+  overflow-wrap: anywhere; /* long email on narrow phones */
+  text-decoration-color: var(--color-accent-bright);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.3em;
+}
+
+.nowrap {
+  white-space: nowrap;
+}
+
+a.panel:focus-visible .value {
+  text-decoration-line: underline;
+}
+
+/* Small ring with a north-east arrow: only on actionable panels. */
+.go {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: clamp(2rem, 10.5vw, 2.25rem);
+  aspect-ratio: 1;
+  border: 1px solid rgb(227 18 27 / 0.8);
+  border-radius: 50%;
+  transition: border-color 0.3s;
+}
+
+a.panel:hover .go,
+a.panel:focus-visible .go {
+  border-color: var(--color-accent-bright);
+}
+
+.arrow {
+  position: relative;
+  width: 0.45rem;
+  height: 0.45rem;
+  border-top: 1px solid var(--color-paper);
+  border-right: 1px solid var(--color-paper);
+  transition: translate 0.3s;
+}
+
+.arrow::after {
+  content: "";
+  position: absolute;
+  top: -1px;
+  right: 0;
+  width: 0.62rem;
+  height: 1px;
+  background: var(--color-paper);
+  transform-origin: right;
+  rotate: -45deg;
+}
+
+a.panel:hover .arrow,
+a.panel:focus-visible .arrow {
+  translate: 0.1rem -0.1rem;
+}
+
+/* "RADUJEM SE SARADNJI" with the ring and a thin line running out. */
+.closing {
+  display: flex;
+  align-items: center;
+  gap: 1.125rem;
+  width: 100%;
+  margin-top: 2.5rem;
+}
+
+.closingRing {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 2.75rem;
+  aspect-ratio: 1;
+  border: 1px solid rgb(227 18 27 / 0.8);
+  border-radius: 50%;
+}
+
+.closingText {
+  font-size: 0.625rem;
+  letter-spacing: 0.4em;
+  line-height: 1.6;
+  text-transform: uppercase;
+  color: var(--color-paper);
+}
+
+.closingLine {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .panel,
+  .go,
+  .arrow {
+    transition: none;
+  }
+}
+
+/* ---------- Wide: content left, orbits right ---------- */
+
+@media (width >= 48rem) and (orientation: landscape) {
+  .contact {
+    display: flex;
+    align-items: center;
+    padding: calc(var(--header-h) * 0.84 + 3vw + env(safe-area-inset-top)) var(--gutter-r)
+      calc(3vw + env(safe-area-inset-bottom)) var(--gutter-l);
+  }
+
+  .orbits {
+    top: calc(var(--header-h) * 0.84);
+    bottom: 0;
+    width: 58vw;
+    height: auto;
+    opacity: 1;
+    mask-image: linear-gradient(to right, transparent, #000 22%);
+  }
+
+  .content {
+    width: 100%;
+  }
+
+  .index {
+    font-size: clamp(0.625rem, 0.75vw, 0.875rem);
+  }
+
+  .rule {
+    width: 7vw;
+  }
+
+  /* "SARAĐUJEMO." spans ≈ 45vw, as in the reference. */
+  .title {
+    margin-top: 3.3vw;
+    font-size: clamp(2.75rem, 5.7vw, 8rem);
+  }
+
+  .intro {
+    max-width: 40vw;
+    margin-top: 1.7vw;
+    font-size: clamp(0.9375rem, 1.24vw, 1.5rem);
+    line-height: 1.4;
+  }
+
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.1vw;
+    width: max(52vw, 38rem); /* the floor keeps values on one line near 1024px */
+    margin-top: 2.6vw;
+  }
+
+  .panel {
+    gap: 1.25vw;
+    min-height: 6.7vw;
+    padding: 1.3vw 1.4vw;
+  }
+
+  .icon {
+    width: clamp(2.75rem, 3.8vw, 5rem);
+  }
+
+  .label {
+    font-size: clamp(0.5625rem, 0.62vw, 0.8125rem);
+  }
+
+  .value {
+    font-size: clamp(0.8125rem, 1.08vw, 1.375rem);
+    overflow-wrap: break-word; /* the email stays whole whenever it fits */
+  }
+
+  .go {
+    width: clamp(1.75rem, 2.3vw, 2.75rem);
+  }
+
+  .closing {
+    gap: 2vw;
+    margin-top: 3.6vw;
+  }
+
+  .closingRing {
+    width: clamp(2.25rem, 3.1vw, 3.75rem);
+  }
+
+  .closingText {
+    font-size: clamp(0.5625rem, 0.72vw, 0.875rem);
+    white-space: nowrap;
+  }
+
+  .closingLine {
+    display: block;
+    flex: 1;
+    height: 1px;
+    background: var(--color-line);
+  }
+}

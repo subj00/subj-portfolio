@@ -79,8 +79,15 @@ export const en: Dictionary = {
       },
     },
   },
-  placeholder: {
-    inProgress: "This section is being built.",
+  contact: {
+    title: ["Let's work", "together."],
+    intro: "Have an idea, a project, or a collaboration in mind? I'd love to hear about it.",
+    closing: "Looking forward to working together",
+    external: "(opens in a new tab)",
+    email: { label: "Email" },
+    linkedin: { label: "LinkedIn", text: "Let's connect on LinkedIn" },
+    phone: { label: "Phone" },
+    location: { label: "Location", text: "Belgrade, Serbia" },
   },
   notFound: {
     title: "Page not found",

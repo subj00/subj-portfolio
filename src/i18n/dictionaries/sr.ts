@@ -79,8 +79,15 @@ export const sr: Dictionary = {
       },
     },
   },
-  placeholder: {
-    inProgress: "Ova sekcija je u izradi.",
+  contact: {
+    title: ["Hajde da", "sarađujemo."],
+    intro: "Imaš ideju, projekat ili predlog za saradnju? Volela bih da čujem više.",
+    closing: "Radujem se saradnji",
+    external: "(otvara se u novoj kartici)",
+    email: { label: "Mejl" },
+    linkedin: { label: "LinkedIn", text: "Povežimo se na LinkedIn-u" },
+    phone: { label: "Telefon" },
+    location: { label: "Grad", text: "Beograd, Srbija" },
   },
   notFound: {
     title: "Stranica nije pronađena",

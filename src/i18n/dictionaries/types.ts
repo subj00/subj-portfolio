@@ -80,8 +80,20 @@ export interface Dictionary {
       }
     >;
   };
-  placeholder: {
-    inProgress: string;
+  contact: {
+    /** Heading in two lines; the second is set in the accent colour. */
+    title: [string, string];
+    intro: string;
+    /** Small letter-spaced statement at the bottom of the section. */
+    closing: string;
+    /** Screen-reader hint appended to links that open a new tab. */
+    external: string;
+    email: { label: string };
+    /** `text` is shown instead of the URL. */
+    linkedin: { label: string; text: string };
+    phone: { label: string };
+    /** Informational only (not a link). */
+    location: { label: string; text: string };
   };
   notFound: {
     title: string;
