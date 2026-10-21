@@ -9,19 +9,21 @@ import {
   INTRO_CHANNEL,
   INTRO_LATE_START,
 } from "@/animation/sequences/hero-intro";
-import { type StageStatus, stageStore } from "@/stores/stage-store";
+import { type StageState, type StageStatus, stageStore } from "@/stores/stage-store";
 import { lockInteractions } from "@/stores/ui-store";
 
 /** Hydrated later than this (ms since navigation start): start at the ignition. */
 const LATE_AFTER_MS = 1400;
 /** Later than this: skip the intro, just show the hero (no second "loading" moment). */
 const SKIP_AFTER_MS = 2800;
-/** Longest the reveal waits for the sculpture. */
-const HOLD_MAX_MS = 400;
+/** Longest the hold waits for the sculpture's first frame. */
+const HOLD_MAX_MS = 600;
 /** Whatever happens, the hero is fully shown by then. */
 const SAFETY_MS = 5000;
 
-const SETTLED: ReadonlySet<StageStatus> = new Set(["ready", "unsupported", "error"]);
+/** No sculpture coming: nothing to wait for. */
+const UNAVAILABLE: ReadonlySet<StageStatus> = new Set(["unsupported", "error"]);
+const settled = (s: StageState) => s.presented.hero === true || UNAVAILABLE.has(s.status);
 
 /**
  * The hero intro's overlay (server-rendered, shown only while html[data-intro]
@@ -185,24 +187,28 @@ function collectParts(overlay: HTMLElement, hero: HTMLElement): HeroIntroParts |
 }
 
 /**
- * Resumes once the stage has settled (sculpture loaded, or WebGL unavailable)
- * plus two frames for its first render, or after HOLD_MAX_MS at most.
+ * Resumes once the hero scene has rendered its first frame (setup and shader
+ * compilation done) or WebGL is unavailable, plus a frame, or after
+ * HOLD_MAX_MS at most. "ready" alone is too early: it only means the renderer
+ * exists, and the scene's setup then blocks the main thread for a few frames.
  * Returns a cancel function.
  */
 function holdForStage(resume: () => void): () => void {
   let frame = 0;
   let resumed = false;
+  performance.mark("intro:hold");
   const go = () => {
     if (resumed) return;
     resumed = true;
+    performance.mark("intro:resume");
     unsubscribe();
     clearTimeout(timer);
     resume();
   };
-  const settle = () => (frame = requestAnimationFrame(() => (frame = requestAnimationFrame(go))));
-  const unsubscribe = stageStore.subscribe((s) => SETTLED.has(s.status) && settle());
+  const settle = () => (frame = requestAnimationFrame(go));
+  const unsubscribe = stageStore.subscribe((s) => settled(s) && settle());
   const timer = setTimeout(go, HOLD_MAX_MS);
-  if (SETTLED.has(stageStore.getState().status)) settle();
+  if (settled(stageStore.getState())) settle();
   return () => {
     resumed = true;
     unsubscribe();

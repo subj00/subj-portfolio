@@ -26,6 +26,12 @@ export interface StageState {
   reducedMotion: boolean;
   /** Reference counts of mounted SceneAnchors per scene. */
   sceneRefs: Partial<Record<SceneKey, number>>;
+  /**
+   * Scenes that have rendered at least one frame (set once per mount, cleared on
+   * unmount): their setup and first shader compilation are done, so animating
+   * them no longer risks a main-thread stall. The hero intro waits for this.
+   */
+  presented: Partial<Record<SceneKey, boolean>>;
 }
 
 export const stageStore = createStore<StageState>()(() => ({
@@ -34,7 +40,12 @@ export const stageStore = createStore<StageState>()(() => ({
   maxTier: "medium",
   reducedMotion: false,
   sceneRefs: {},
+  presented: {},
 }));
+
+export function setScenePresented(key: SceneKey, presented: boolean) {
+  stageStore.setState((s) => ({ presented: { ...s.presented, [key]: presented } }));
+}
 
 export function setStageStatus(status: StageStatus) {
   stageStore.setState({ status });

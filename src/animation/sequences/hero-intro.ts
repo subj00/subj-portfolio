@@ -16,7 +16,11 @@ import { sceneRigs } from "@/runtime/scene/scene-rigs";
  *   E  1.40–2.00  label, subtitle, CTA, header and scroll hint settle in
  *
  * A pause at HOLD gives a still-loading sculpture a brief chance (bounded by
- * the caller) to be ready for its reveal; nothing waits beyond that.
+ * the caller) to be ready for its reveal; nothing waits beyond that. HOLD sits
+ * where nothing on screen is moving (the core has just lit, the ignition has not
+ * started): the stage's first render (scene setup, shader compilation) blocks
+ * the main thread for a few frames, and GSAP cannot animate during it, so that
+ * work must land on a still frame, never mid-motion.
  *
  * Every tween is a fromTo or a to on a value the timeline itself set, so
  * reverting the timeline afterwards restores the exact resting state (rig
@@ -26,7 +30,7 @@ import { sceneRigs } from "@/runtime/scene/scene-rigs";
 export const INTRO_CHANNEL = "intro";
 /** Where a late start (slow hydration) begins: skips the darkness, keeps the ignition. */
 export const INTRO_LATE_START = 0.22;
-const HOLD = 0.5;
+const HOLD = 0.24;
 
 /** Beam travel: wrapper 170vmax / beam 28vmax (HeroIntro's overlay). */
 const BEAM_TRAVEL = (170 / 28) * 100;
@@ -77,13 +81,11 @@ export function buildHeroIntro(
     )
     .to(trail, { opacity: 0, duration: 0.4, ease: "power1.out" }, 0.46)
     .to(core, { scale: 3.4, opacity: 0, duration: 0.24, ease: "power2.out" }, 0.4)
-    .fromTo(
-      flash,
-      { scale: 0.25, opacity: 0 },
-      { scale: 1, opacity: 1, duration: 0.1, ease: "power2.out" },
-      0.4,
-    )
-    .to(flash, { scale: 1.35, opacity: 0, duration: 0.55, ease: "power2.out" }, 0.5)
+    // The flash expands in ONE tween (one ease, no seam); its opacity has its own
+    // fade-in and fade-out, so no two tweens ever share a property.
+    .fromTo(flash, { scale: 0.25 }, { scale: 1.35, duration: 0.65, ease: "power3.out" }, 0.4)
+    .fromTo(flash, { opacity: 0 }, { opacity: 1, duration: 0.08, ease: "power2.out" }, 0.4)
+    .to(flash, { opacity: 0, duration: 0.55, ease: "power2.out" }, 0.5)
     .fromTo(
       ring,
       { scale: 0.15, opacity: 0.9 },

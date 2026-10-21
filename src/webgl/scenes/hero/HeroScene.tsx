@@ -11,7 +11,7 @@ import {
   Vector3,
 } from "three";
 import { sceneRigs } from "@/runtime/scene/scene-rigs";
-import { stageStore } from "@/stores/stage-store";
+import { setScenePresented, stageStore } from "@/stores/stage-store";
 import { createAnchorFrame, sampleAnchor } from "../../anchor-projection";
 import { useObjectInteraction } from "../../interaction/use-object-interaction";
 import { useDisposable } from "../../use-disposable";
@@ -131,6 +131,7 @@ export default function HeroScene() {
     random: seededRandom(29),
     ignite: sceneRigs.hero.ignite,
     boot: 0,
+    visibleFrames: 0,
   });
 
   /** One energy impact at `normal` (sculpture space, unit length). */
@@ -174,6 +175,8 @@ export default function HeroScene() {
     };
   }, []);
 
+  useEffect(() => () => setScenePresented("hero", false), []);
+
   useFrame((state, delta) => {
     const anchor = anchorLayer.current;
     if (!anchor) return;
@@ -198,6 +201,8 @@ export default function HeroScene() {
     m.clock += delta;
     if (!reduced) m.time += delta;
     m.boot = Math.min(1, m.boot + delta / BOOT_SECONDS);
+    // Second visible frame: the first one has been rendered (and compiled).
+    if (++m.visibleFrames === 2) setScenePresented("hero", true);
     const boot = reduced ? 1 : 1 - (1 - m.boot) ** 3;
 
     // Intro ignite: an impact on the side facing the camera (increments only).
