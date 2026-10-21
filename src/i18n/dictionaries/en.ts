@@ -63,16 +63,17 @@ export const en: Dictionary = {
     soon: "Link coming soon",
     items: {
       dajana: {
-        category: "Independent project",
+        category: "Client project",
         description: "Project description will be updated.",
       },
       "hrana-bez-mana": {
-        category: "Independent / client project",
+        category: "Client project",
         description: "Project description will be updated.",
       },
       "american-eagle": {
-        category: "Professional contribution",
+        category: "Professional experience",
         context: "As part of the team at Grid Dynamics",
+        linkNote: "Public client website",
         description: "Professional contribution details will be updated.",
       },
     },

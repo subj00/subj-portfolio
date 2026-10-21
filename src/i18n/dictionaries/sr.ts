@@ -58,21 +58,22 @@ export const sr: Dictionary = {
   },
   projects: {
     intro: "Od samostalnih ideja do profesionalnih projekata.",
-    visit: "Poseti sajt",
+    visit: "Pogledaj sajt",
     external: "(otvara se u novoj kartici)",
     soon: "Link uskoro",
     items: {
       dajana: {
-        category: "Samostalni projekat",
+        category: "Klijentski projekat",
         description: "Opis projekta će biti naknadno ažuriran.",
       },
       "hrana-bez-mana": {
-        category: "Samostalni / klijentski projekat",
+        category: "Klijentski projekat",
         description: "Opis projekta će biti naknadno ažuriran.",
       },
       "american-eagle": {
         category: "Profesionalni angažman",
         context: "Kao deo tima u kompaniji Grid Dynamics",
+        linkNote: "Javni sajt klijenta",
         description: "Opis profesionalnog angažmana biće naknadno ažuriran.",
       },
     },

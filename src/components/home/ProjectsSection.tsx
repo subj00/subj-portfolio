@@ -12,7 +12,8 @@ import styles from "./ProjectsSection.module.css";
  *   mobile – the same panels stacked, full width
  * Each panel: number, category (+ context for professional work), large
  * title, description, and the external link (or "link coming soon" while the
- * URL is unknown). Content: src/content/projects.ts + dictionaries.
+ * URL is unknown); professional work adds who it was done with and a note that
+ * the link is the client's public website. Content: src/content/projects.ts + dictionaries.
  *
  * data-projects marks the parts a later scroll transition will animate; the
  * CSS keeps transforms off them so GSAP can own them cleanly.
@@ -82,7 +83,8 @@ function ProjectEntry({
           <span className={styles.actionLabel}>{dict.projects.visit}</span>
           <span className="sr-only">
             {" "}
-            {project.title} {dict.projects.external}
+            {project.title}
+            {text.linkNote ? `, ${text.linkNote}` : ""} {dict.projects.external}
           </span>
         </a>
       ) : (
@@ -93,6 +95,13 @@ function ProjectEntry({
           <span className={styles.actionLabel}>{dict.projects.soon}</span>
         </p>
       )}
+      {/* Same one-line slot on every linked card (empty when there is no note), so
+          the actions stay aligned across cards. */}
+      {project.url ? (
+        <p aria-hidden className={styles.linkNote}>
+          {text.linkNote ?? ""}
+        </p>
+      ) : null}
     </li>
   );
 }

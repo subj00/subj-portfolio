@@ -72,7 +72,17 @@ export interface Dictionary {
     external: string;
     /** Shown instead of the link while a project's URL is not available. */
     soon: string;
-    items: Record<ProjectId, { category: string; description: string; context?: string }>;
+    items: Record<
+      ProjectId,
+      {
+        category: string;
+        description: string;
+        /** Who the work was done with (professional work), shown under the title. */
+        context?: string;
+        /** Small note under the link, e.g. that it is a client's public website. */
+        linkNote?: string;
+      }
+    >;
   };
   placeholder: {
     inProgress: string;

@@ -21,7 +21,22 @@ export interface Project {
 }
 
 export const projects: readonly Project[] = [
-  { id: "dajana", title: "Portfolio\u00a0— Dajana Subotić", kind: "independent", url: null },
-  { id: "hrana-bez-mana", title: "Hrana bez mana\u00a0— Catering", kind: "independent", url: null },
-  { id: "american-eagle", title: "American Eagle Outfitters", kind: "professional", url: null },
+  {
+    id: "dajana",
+    title: "Portfolio\u00a0— Dajana Subotić",
+    kind: "independent",
+    url: "https://dajana-portfolio.vercel.app/",
+  },
+  {
+    id: "hrana-bez-mana",
+    title: "Hrana bez mana\u00a0— Catering",
+    kind: "independent",
+    url: "https://hrana-bez-mana.vercel.app/",
+  },
+  {
+    id: "american-eagle",
+    title: "American Eagle Outfitters",
+    kind: "professional",
+    url: "https://www.ae.com/us/en",
+  },
 ];
