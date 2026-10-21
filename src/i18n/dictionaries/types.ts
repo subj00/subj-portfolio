@@ -80,6 +80,12 @@ export interface Dictionary {
       }
     >;
   };
+  footer: {
+    /** Signature line at the bottom right. */
+    credit: string;
+    /** Accessible name of the circular back-to-top control. */
+    backToTop: string;
+  };
   contact: {
     /** Heading in two lines; the second is set in the accent colour. */
     title: [string, string];

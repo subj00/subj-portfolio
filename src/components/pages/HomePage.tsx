@@ -5,6 +5,7 @@ import { HeroSection } from "@/components/home/HeroSection";
 import { ProjectsSection } from "@/components/home/ProjectsSection";
 import { RedFracture } from "@/components/home/RedFracture";
 import { RedShift } from "@/components/home/RedShift";
+import { SiteFooter } from "@/components/layout/SiteFooter";
 import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries/types";
 
@@ -15,18 +16,22 @@ import type { Dictionary } from "@/i18n/dictionaries/types";
  */
 export function HomePage({ locale, dict }: { locale: Locale; dict: Dictionary }) {
   return (
-    // relative: the energy overlays (RedFracture, FinalOrbit) are positioned in it.
-    <main id="main" tabIndex={-1} className="relative outline-none">
-      <HeroSection locale={locale} dict={dict} />
-      <AboutSection locale={locale} dict={dict} />
-      {/* Hero → About scroll transition (client; renders nothing visible). */}
-      <RedShift />
-      <ProjectsSection locale={locale} dict={dict} />
-      {/* About → Projects transition and its energy overlay (client). */}
-      <RedFracture />
-      <ContactSection locale={locale} dict={dict} />
-      {/* Projects → Contact transition and its energy overlay (client). */}
-      <FinalOrbit />
-    </main>
+    <>
+      {/* relative: the energy overlays (RedFracture, FinalOrbit) are positioned in it. */}
+      <main id="main" tabIndex={-1} className="relative outline-none">
+        <HeroSection locale={locale} dict={dict} />
+        <AboutSection locale={locale} dict={dict} />
+        {/* Hero → About scroll transition (client; renders nothing visible). */}
+        <RedShift />
+        <ProjectsSection locale={locale} dict={dict} />
+        {/* About → Projects transition and its energy overlay (client). */}
+        <RedFracture />
+        <ContactSection locale={locale} dict={dict} />
+        {/* Projects → Contact transition and its energy overlay (client). */}
+        <FinalOrbit />
+      </main>
+      {/* The closing signature, after <main> (contentinfo landmark). */}
+      <SiteFooter locale={locale} dict={dict} />
+    </>
   );
 }

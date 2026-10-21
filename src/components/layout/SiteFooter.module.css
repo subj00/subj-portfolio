@@ -1,0 +1,182 @@
+/*
+ * The footer: calm and compact (no full-screen height). Same "wide" switch as
+ * the sections (≥ 48rem and landscape). No transforms on [data-footer]
+ * (GSAP owns them for the entrance).
+ */
+
+.footer {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 4.5rem var(--gutter-r) calc(1.75rem + env(safe-area-inset-bottom)) var(--gutter-l);
+}
+
+/* Thin divider across the gutters, with a short crimson accent at its centre. */
+.divider {
+  position: absolute;
+  top: 0;
+  right: var(--gutter-r);
+  left: var(--gutter-l);
+  height: 1px;
+  background:
+    linear-gradient(to right, transparent, rgb(227 18 27 / 0.85) 50%, transparent) center / 7rem 1px
+      no-repeat,
+    var(--color-line);
+}
+
+.signature {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Sized to the lettering (the graphic trims its own padding); the mask for the
+   rising entrance. A hair of clip margin keeps antialiased edges intact. */
+.name {
+  width: min(64vw, 17rem);
+  overflow: clip;
+  overflow-clip-margin: 2px;
+}
+
+.nameInner {
+  display: block;
+}
+
+.role {
+  margin-top: 1.25rem;
+  font-size: 0.6875rem;
+  letter-spacing: 0.42em;
+  text-transform: uppercase;
+  color: var(--color-soft);
+  /* Letter-spacing trails the last letter: balance it for optical centring. */
+  padding-left: 0.42em;
+}
+
+/* Mobile: stacked and centred, the control first, clear of the text. */
+.bottom {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.875rem;
+  width: 100%;
+  margin-top: 3.5rem;
+  text-align: center;
+}
+
+.meta {
+  font-size: 0.625rem;
+  letter-spacing: 0.24em;
+  line-height: 1.7;
+  text-transform: uppercase;
+  color: var(--color-mist);
+}
+
+.top {
+  order: -1;
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  aspect-ratio: 1;
+  margin-bottom: 0.5rem;
+  border: 1px solid rgb(227 18 27 / 0.7);
+  border-radius: 50%;
+  outline: none;
+  transition:
+    border-color 0.3s,
+    box-shadow 0.3s;
+}
+
+.top:hover,
+.top:focus-visible {
+  border-color: var(--color-accent-bright);
+  box-shadow: 0 0 0.9rem rgb(255 42 51 / 0.22);
+}
+
+.top:focus-visible {
+  outline: 1px solid var(--color-accent-bright);
+  outline-offset: 3px;
+}
+
+/* A thin upward arrow: chevron (borders) plus a short stem. */
+.arrow {
+  position: relative;
+  width: 0.5rem;
+  height: 0.5rem;
+  margin-top: 0.3rem;
+  border-top: 1px solid var(--color-paper);
+  border-left: 1px solid var(--color-paper);
+  rotate: 45deg;
+  transition: translate 0.3s;
+}
+
+.arrow::after {
+  content: "";
+  position: absolute;
+  top: -1px;
+  left: -1px;
+  width: 1px;
+  height: 0.85rem;
+  background: var(--color-paper);
+  transform-origin: top;
+  rotate: -45deg;
+}
+
+.top:hover .arrow,
+.top:focus-visible .arrow {
+  translate: 0 -0.12rem; /* applied before the rotation: straight up */
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .top,
+  .arrow {
+    transition: none;
+  }
+}
+
+/* ---------- Wide: copyright left, control centred, credit right ---------- */
+
+@media (width >= 48rem) and (orientation: landscape) {
+  .footer {
+    padding-top: clamp(3.5rem, 6vw, 7rem);
+    padding-bottom: calc(clamp(1.5rem, 2.4vw, 2.5rem) + env(safe-area-inset-bottom));
+  }
+
+  .divider {
+    background-size:
+      clamp(6rem, 12vw, 12rem) 1px,
+      auto;
+  }
+
+  .name {
+    width: clamp(13rem, 22vw, 26rem);
+  }
+
+  .role {
+    margin-top: clamp(1rem, 1.4vw, 1.75rem);
+    font-size: clamp(0.6875rem, 0.78vw, 0.9375rem);
+  }
+
+  .bottom {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    margin-top: clamp(3rem, 5.5vw, 6rem);
+    text-align: left;
+  }
+
+  .meta {
+    font-size: clamp(0.625rem, 0.66vw, 0.8125rem);
+  }
+
+  .top {
+    order: 0;
+    width: clamp(2.5rem, 3vw, 3.5rem);
+    margin-bottom: 0;
+  }
+
+  .credit {
+    justify-self: end;
+    text-align: right;
+  }
+}

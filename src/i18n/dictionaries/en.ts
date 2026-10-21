@@ -79,6 +79,10 @@ export const en: Dictionary = {
       },
     },
   },
+  footer: {
+    credit: "Designed & built by me",
+    backToTop: "Back to top",
+  },
   contact: {
     title: ["Let's work", "together."],
     intro: "Have an idea, a project, or a collaboration in mind? I'd love to hear about it.",

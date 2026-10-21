@@ -79,6 +79,10 @@ export const sr: Dictionary = {
       },
     },
   },
+  footer: {
+    credit: "Dizajn i izrada: Jelena Subotić",
+    backToTop: "Nazad na vrh",
+  },
   contact: {
     title: ["Hajde da", "sarađujemo."],
     intro: "Imaš ideju, projekat ili predlog za saradnju? Volela bih da čujem više.",
