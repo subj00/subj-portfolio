@@ -1,0 +1,474 @@
+/*
+ * About (section 02). Two intentional layouts, switched by the same "wide"
+ * condition as the header and hero (≥ 48rem and landscape).
+ *
+ * Wide values are measured from the reference frame (1230px wide, 456px tall
+ * below the header) and expressed in vw so the composition keeps its
+ * proportions across desktop widths:
+ *   left gutter 62px = 5vw, intro column 268px = 21.8vw, gap 56px = 4.6vw,
+ *   portrait 307×380px = 25vw × 30.9vw, gap 33px = 2.7vw, timeline 472px ≈ 37.5vw,
+ *   timeline: icon 26px | rail 52px (dot at its centre) | text | date | chevron 41px.
+ */
+
+.about {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  grid-template-areas:
+    "portrait"
+    "intro"
+    "timeline";
+  padding: calc(var(--header-h) + env(safe-area-inset-top) + 1rem) var(--gutter-r)
+    calc(4rem + env(safe-area-inset-bottom)) var(--gutter-l);
+  overflow: clip;
+}
+
+/* Thin decorative red arcs (wide only), behind everything. */
+.arcs {
+  display: none;
+  position: absolute;
+  inset: calc(var(--header-h) * 0.84) 0 0;
+  z-index: -1;
+  width: 100%;
+  height: calc(100% - var(--header-h) * 0.84);
+  fill: none;
+  stroke: rgb(227 18 27 / 0.32);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+  pointer-events: none;
+}
+
+.arcs path {
+  vector-effect: non-scaling-stroke;
+}
+
+/* ---------- Intro column ---------- */
+
+.intro {
+  grid-area: intro;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+/* "02 ——" */
+.index {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  font-size: 0.625rem;
+  letter-spacing: 0.1em;
+  color: var(--color-soft);
+}
+
+.rule {
+  display: block;
+  width: 3.25rem;
+  height: 1px;
+  background: var(--color-line);
+}
+
+.title {
+  display: flex;
+  flex-direction: column;
+  margin-top: 0.75rem;
+  font-size: clamp(2.5rem, 13.5vw, 3.75rem);
+  font-weight: 300;
+  line-height: 0.82; /* ABOUT and ME nearly touch, as in the reference */
+  letter-spacing: 0.05em; /* the reference face is wider than Jost */
+  text-transform: uppercase;
+  color: var(--color-paper);
+}
+
+.accent {
+  color: var(--color-accent-bright);
+}
+
+.bio {
+  max-width: 24em;
+  margin-top: 1.25rem;
+  font-size: clamp(0.9375rem, 4vw, 1rem);
+  font-weight: 300;
+  line-height: 1.5;
+  color: var(--color-soft);
+}
+
+/* Download CV: thin red ring with a dot + letter-spaced label (as in the hero CTA). */
+.cv {
+  display: inline-flex;
+  align-items: center;
+  gap: 1.125rem;
+  min-height: 2.75rem;
+  margin-top: 1.75rem;
+  outline: none;
+}
+
+.ring {
+  display: grid;
+  place-items: center;
+  width: 2.375rem;
+  aspect-ratio: 1;
+  border: 1px solid rgb(227 18 27 / 0.7);
+  border-radius: 50%;
+  transition: border-color 0.3s;
+}
+
+.dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--color-accent-bright);
+  transition: transform 0.3s;
+}
+
+.cvLabel {
+  font-size: 0.625rem;
+  letter-spacing: 0.4em;
+  text-transform: uppercase;
+  color: var(--color-paper);
+  text-decoration-color: var(--color-accent-bright);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.6em;
+}
+
+.cv:hover .ring,
+.cv:focus-visible .ring {
+  border-color: var(--color-accent-bright);
+}
+
+.cv:hover .dot {
+  transform: scale(1.5);
+}
+
+.cv:focus-visible .cvLabel {
+  text-decoration-line: underline;
+}
+
+/* ---------- Portrait ---------- */
+
+.portrait {
+  grid-area: portrait;
+  position: relative;
+  width: 88vw;
+  margin-left: calc(
+    4vw - var(--gutter-l)
+  ); /* bleeds left of the text gutter, as in the reference */
+  aspect-ratio: 1.64;
+  overflow: hidden;
+}
+
+/* The photo carries its own red rectangular light; a soft fade grounds its base. */
+.portrait::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgb(5 5 5 / 0.55), transparent 30%);
+  pointer-events: none;
+}
+
+.photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 32%;
+}
+
+/* ---------- Timeline ---------- */
+
+.timeline {
+  grid-area: timeline;
+  position: relative;
+  margin-top: 3rem;
+  --icon-w: 1.625rem;
+  --rail-w: 2.5rem;
+}
+
+/* The red rail through the dots, fading out at both ends. */
+.timeline::before {
+  content: "";
+  position: absolute;
+  top: -0.75rem;
+  bottom: -1.5rem;
+  left: calc(var(--icon-w) + var(--rail-w) / 2);
+  width: 1px;
+  background: linear-gradient(
+    transparent,
+    rgb(227 18 27 / 0.55) 12%,
+    rgb(227 18 27 / 0.55) 82%,
+    transparent
+  );
+}
+
+.entry {
+  position: relative;
+}
+
+/* Thin separator between rows, from the text column to the right edge. */
+.entry + .entry::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: calc(var(--icon-w) + var(--rail-w));
+  height: 1px;
+  background: var(--color-line);
+}
+
+.summary {
+  display: grid;
+  /* Mobile: the date sits under the text, so titles keep the full width. */
+  grid-template-columns: var(--icon-w) var(--rail-w) minmax(0, 1fr) 2rem;
+  align-items: start;
+  padding-block: 1.25rem;
+  cursor: pointer;
+  list-style: none;
+  outline: none;
+}
+
+.summary::-webkit-details-marker {
+  display: none;
+}
+
+.icon {
+  width: var(--icon-w);
+  height: auto;
+  margin-top: 0.05rem;
+}
+
+.node {
+  justify-self: center;
+  width: 5px;
+  height: 5px;
+  margin-top: 0.45rem;
+  border-radius: 50%;
+  background: var(--color-accent-bright);
+}
+
+.head {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding-right: 0.75rem;
+}
+
+.entryTitle {
+  font-size: 0.9375rem;
+  font-weight: 400;
+  line-height: 1.35;
+  color: var(--color-paper);
+  text-decoration-color: var(--color-accent-bright);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.3em;
+}
+
+.summary:focus-visible .entryTitle {
+  text-decoration-line: underline;
+}
+
+.entrySub {
+  font-size: 0.8125rem;
+  font-weight: 300;
+  line-height: 1.45;
+  color: var(--color-mist);
+}
+
+.period {
+  grid-column: 3;
+  grid-row: 2;
+  padding-top: 0.5rem;
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  color: var(--color-mist);
+}
+
+/* Thin chevron; flips when the row is open. */
+.chevron {
+  grid-column: 4;
+  grid-row: 1;
+  justify-self: end;
+  width: 0.4rem;
+  height: 0.4rem;
+  margin: 0.35rem 0.2rem 0 0;
+  border-right: 1px solid var(--color-soft);
+  border-bottom: 1px solid var(--color-soft);
+  transform: rotate(45deg);
+  transition: transform 0.3s;
+}
+
+.disclosure[open] .chevron {
+  transform: translateY(0.2rem) rotate(-135deg);
+}
+
+.summary:hover .chevron {
+  border-color: var(--color-paper);
+}
+
+.details {
+  display: grid;
+  gap: 0.4rem;
+  margin: -0.5rem 2rem 1.25rem calc(var(--icon-w) + var(--rail-w));
+  font-size: 0.8125rem;
+  font-weight: 300;
+  line-height: 1.5;
+  color: var(--color-soft);
+}
+
+.details li {
+  position: relative;
+  padding-left: 0.9rem;
+}
+
+.details li::before {
+  content: "";
+  position: absolute;
+  top: 0.72em;
+  left: 0;
+  width: 0.4rem;
+  height: 1px;
+  background: var(--color-accent-bright);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chevron,
+  .ring,
+  .dot {
+    transition: none;
+  }
+}
+
+/* ---------- Wide: intro | portrait | timeline ---------- */
+
+@media (width >= 48rem) and (orientation: landscape) {
+  .about {
+    grid-template-areas: "intro portrait timeline";
+    grid-template-columns: 21.8vw auto minmax(0, 1fr);
+    /* Everything is top-anchored with computed offsets (the composition is
+       centred in the viewport below the header), so an opened timeline row only
+       extends the section and never shifts the portrait or the intro. */
+    align-items: start;
+    min-height: 100svh;
+    padding: calc(var(--header-h) * 0.84 + env(safe-area-inset-top)) var(--gutter-r)
+      env(safe-area-inset-bottom) var(--gutter-l);
+    --content-h: calc(100svh - var(--header-h) * 0.84);
+    --portrait-h: min(30.9vw, calc(var(--content-h) * 0.833));
+    --portrait-top: calc((var(--content-h) - var(--portrait-h)) / 2);
+  }
+
+  .arcs {
+    display: block;
+  }
+
+  /* The column spans the portrait's height: index at its top, CTA at its base. */
+  .intro {
+    height: var(--portrait-h);
+    margin-top: var(--portrait-top);
+    padding-block: 1.2vw 0.6vw;
+  }
+
+  .index {
+    margin-top: 0;
+    font-size: clamp(0.625rem, 0.75vw, 0.8125rem);
+  }
+
+  .rule {
+    width: 5.3vw;
+  }
+
+  /* Sized so "ABOUT" spans ≈ 17vw, as in the reference. */
+  .title {
+    margin-top: 3vw;
+    font-size: clamp(2.5rem, 5vw, 6.5rem);
+  }
+
+  .bio {
+    max-width: 21.8vw;
+    margin-top: 2vw;
+    font-size: clamp(0.875rem, 1.22vw, 1.375rem);
+    line-height: 1.42;
+  }
+
+  .cv {
+    margin-top: auto;
+    gap: 1.5vw;
+  }
+
+  .ring {
+    width: clamp(1.75rem, 2.45vw, 2.75rem);
+  }
+
+  .cvLabel {
+    font-size: clamp(0.5625rem, 0.75vw, 0.8125rem);
+  }
+
+  .portrait {
+    width: auto;
+    height: var(--portrait-h);
+    aspect-ratio: 307 / 380;
+    margin: var(--portrait-top) 0 0 4.6vw;
+  }
+
+  .photo {
+    object-position: 50% 30%;
+  }
+
+  /* Top-anchored where the reference has it (first row ≈ 0.17 portrait heights
+     below the portrait top), so opening a row only pushes content down. */
+  .timeline {
+    align-self: start;
+    margin: calc(var(--portrait-top) + var(--portrait-h) * 0.168) 0 0 2.7vw;
+    --icon-w: 2.1vw;
+    --rail-w: 4vw;
+  }
+
+  .summary {
+    grid-template-columns: var(--icon-w) var(--rail-w) minmax(0, 1fr) auto 3.3vw;
+    padding-block: 1.55vw 1.75vw;
+  }
+
+  /* Wide: date in its own right-aligned column, as in the reference. */
+  .period {
+    grid-column: 4;
+    grid-row: 1;
+  }
+
+  .chevron {
+    grid-column: 5;
+  }
+
+  .node {
+    width: 0.42vw;
+    height: 0.42vw;
+    min-width: 4px;
+    min-height: 4px;
+    margin-top: 0.5vw;
+  }
+
+  .entryTitle {
+    font-size: clamp(0.8125rem, 1.08vw, 1.25rem);
+  }
+
+  .entrySub {
+    font-size: clamp(0.6875rem, 0.92vw, 1.0625rem);
+  }
+
+  .period {
+    padding-top: 0.2vw;
+    padding-inline-start: 1vw;
+    font-size: clamp(0.625rem, 0.82vw, 0.9375rem);
+  }
+
+  .chevron {
+    width: 0.5vw;
+    height: 0.5vw;
+    min-width: 6px;
+    min-height: 6px;
+    margin-top: 0.3vw;
+  }
+
+  .details {
+    margin: -0.6vw 3.3vw 1.5vw calc(var(--icon-w) + var(--rail-w));
+    font-size: clamp(0.75rem, 0.92vw, 1.0625rem);
+  }
+}

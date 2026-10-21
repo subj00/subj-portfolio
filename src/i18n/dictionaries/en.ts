@@ -27,6 +27,50 @@ export const en: Dictionary = {
     cta: "View my work",
     scroll: "Scroll",
   },
+  about: {
+    title: ["About", "me"],
+    bio: "I am creative and curious, and I love programming and building websites, turning ideas into something concrete. I enjoy learning, exploring, travelling and meeting new people and cultures.",
+    cv: "Download CV",
+    cvHint: "(PDF)",
+    timelineLabel: "Education and experience",
+    timeline: [
+      {
+        kind: "education",
+        title: "University of Belgrade – FON",
+        subtitle: ["Bachelor's degree", "Information Systems and Technologies"],
+        period: "2019 – 2023",
+        details: [
+          "Faculty of Organizational Sciences, University of Belgrade.",
+          "Study programme: Information Systems and Technologies.",
+        ],
+      },
+      {
+        kind: "education",
+        title: "Master's degree",
+        subtitle: [
+          "Faculty of Organizational Sciences",
+          "Information Technology and Cybersecurity",
+        ],
+        period: "2023 – 2024",
+        details: [
+          "Title: Master of Information Systems Engineering.",
+          "Study programme: Information Technology and Cybersecurity.",
+        ],
+      },
+      {
+        kind: "work",
+        title: "Grid Dynamics, Belgrade",
+        subtitle: ["Medior Software Engineer"],
+        period: "2023 – Present",
+        details: [
+          "Developing and maintaining an e-commerce platform for American Eagle.",
+          "Implementing new features and improving existing ones.",
+          "Fixing bugs, QA and regression testing, with a focus on stability and performance.",
+          "Taking part in code reviews and working with development and QA teams.",
+        ],
+      },
+    ],
+  },
   placeholder: {
     inProgress: "This section is being built.",
   },

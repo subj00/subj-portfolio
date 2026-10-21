@@ -1,3 +1,4 @@
+import { AboutSection } from "@/components/home/AboutSection";
 import { HeroSection } from "@/components/home/HeroSection";
 import { SectionPlaceholder } from "@/components/home/SectionPlaceholder";
 import type { Locale } from "@/i18n/config";
@@ -6,10 +7,10 @@ import type { Dictionary } from "@/i18n/dictionaries/types";
 /**
  * The portfolio: one continuous page whose sections (in scroll order) will
  * transform into one another through ScrollTrigger and the persistent WebGL
- * stage. Only the hero is designed so far; the others are placeholders.
+ * stage. Hero and About are designed; the others are placeholders.
  */
 export function HomePage({ locale, dict }: { locale: Locale; dict: Dictionary }) {
-  const placeholder = (section: "about" | "projects" | "contact") => (
+  const placeholder = (section: "projects" | "contact") => (
     <SectionPlaceholder
       locale={locale}
       section={section}
@@ -21,7 +22,7 @@ export function HomePage({ locale, dict }: { locale: Locale; dict: Dictionary })
   return (
     <main id="main" tabIndex={-1} className="outline-none">
       <HeroSection locale={locale} dict={dict} />
-      {placeholder("about")}
+      <AboutSection locale={locale} dict={dict} />
       {placeholder("projects")}
       {placeholder("contact")}
     </main>
