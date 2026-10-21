@@ -58,7 +58,7 @@ export const sr: Dictionary = {
   },
   projects: {
     intro: "Od samostalnih ideja do profesionalnih projekata.",
-    visit: "Pogledaj sajt",
+    visit: "Poseti sajt",
     external: "(otvara se u novoj kartici)",
     soon: "Link uskoro",
     items: {
