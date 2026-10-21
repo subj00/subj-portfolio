@@ -2,6 +2,7 @@ import { Jost, Space_Grotesk } from "next/font/google";
 import type { ReactNode } from "react";
 import { INTRO_GATE_SCRIPT } from "@/animation/intro-gate";
 import { ExperienceRoot } from "@/runtime/ExperienceRoot";
+import { BootScript } from "./BootScript";
 import "@/styles/globals.css";
 
 // Geometric sans for labels, navigation and body copy. Self-hosted by next/font
@@ -37,8 +38,8 @@ export function RootDocument({ lang, children }: { lang: string; children: React
     >
       <body>
         {/* First in <body>, so it runs before anything is painted: decides whether the
-            hero intro plays (intro-gate.ts). */}
-        <script dangerouslySetInnerHTML={{ __html: INTRO_GATE_SCRIPT }} />
+            hero intro plays (intro-gate.ts). Server/hydration only, see BootScript. */}
+        <BootScript code={INTRO_GATE_SCRIPT} />
         <ExperienceRoot>{children}</ExperienceRoot>
       </body>
     </html>
